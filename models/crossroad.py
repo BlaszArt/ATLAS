@@ -3,4 +3,3 @@ class Crossroad:
         self.cars = {}
         self.lights = {}
         self.topology = {}
-        self.neighbour_agents = {}
