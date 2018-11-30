@@ -16,4 +16,4 @@ class ChangeLights(CyclicBehaviour):
         lights_to_change = self.agent.crossroad.topology[max_busy_road]
         for street in self.agent.crossroad.lights:
             self.agent.crossroad.lights[street] = 1 if street in lights_to_change else 0
-        await asyncio.sleep(30)
+        await asyncio.sleep(15)
