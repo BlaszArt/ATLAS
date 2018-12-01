@@ -1,0 +1,10 @@
+{
+  "ca1@jabbim.pl": {
+    "roads": [
+      {"NS": ["street0", "street2"], "weight": 1},
+      {"EW": ["street1", "street3"], "weight": 1}
+    ],
+    "streets": ["street1", "street2", "street3", "street0"],
+    "neighbours": []
+  }
+}
