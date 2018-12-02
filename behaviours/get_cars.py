@@ -1,18 +1,12 @@
 from spade.behaviour import CyclicBehaviour
-import asyncio
-
 from models.directions import Directions
+import asyncio
 
 
 class GetCars(CyclicBehaviour):
-    def __init__(self, agent, cars_speed):
-        super(GetCars, self).__init__()
-        self.agent = agent
-        self.cars_speed = cars_speed
-
-    async def on_start(self):
-        pass
-
+    """
+    Crossroad behaviour for getting data about cars on streets
+    """
     async def run(self):
         for street in self.agent.crossroad.cars:
             self.simulator(street)
