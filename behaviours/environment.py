@@ -8,12 +8,12 @@ class ChangeLights(CyclicBehaviour):
         return sum([self.agent.crossroad.cars[street] for street in streets])
 
     def road_occupancy(self):
-        return {road: self.how_busy_is_road(streets) for road, streets in self.agent.crossroad.roads.items()}
+        return {road: self.how_busy_is_road(data['streets']) for road, data in self.agent.crossroad.roads.items()}
 
     def green_for_max_busy_road(self):
         road_occupancy = self.road_occupancy()
         max_busy_road = max(road_occupancy, key=road_occupancy.get)
-        lights_to_change = self.agent.crossroad.roads[max_busy_road]
+        lights_to_change = self.agent.crossroad.roads[max_busy_road]['streets']
         for street in self.agent.crossroad.lights:
             self.agent.crossroad.lights[street] = 1 if street in lights_to_change else 0
 
