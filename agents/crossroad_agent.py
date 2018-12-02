@@ -45,7 +45,7 @@ class CrossroadAgent(Agent):
         self.add_behaviour(SendReportForSubscribers())
 
         # Get data from sensors
-        self.add_behaviour(GetCars(self, self.cars_speed))
+        self.add_behaviour(GetCars(self))
 
         # Control lights
         self.add_behaviour(ChangeLights(self))
