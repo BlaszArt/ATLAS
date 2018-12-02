@@ -1,39 +1,47 @@
 from spade.agent import Agent
-from behaviours import change_lights, get_cars, report_situation
+from spade.template import Template
+from behaviours.environment import GetCars, ChangeLights
+from behaviours.topology import UpdateTopology
+from behaviours.reporting import SendReportToManager
 from models import crossroad
-from models.directions import Directions
 
 
 class CrossroadAgent(Agent):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, manager_jid, cars_speed, *args, **kwargs):
         super(CrossroadAgent, self).__init__(*args, **kwargs)
+        self.manager_jid = manager_jid
         self.crossroad = crossroad.Crossroad()
         self.neighbours = {}
-        self.cars_speed = 0
-
-    def init_crossroad(self, neighbours):
-        self.crossroad.topology['NS'] = []
-        self.crossroad.topology['WE'] = []
-        self.neighbours = neighbours
-        for i in range(0, 4):
-            street = Directions(i).name
-            if i % 2:
-                self.crossroad.topology['NS'].append(street)
-            else:
-                self.crossroad.topology['WE'].append(street)
-            self.crossroad.cars[street] = 0
-            self.crossroad.lights[street] = 1 if i % 2 else 0
-
-    def start(self, neighbours, cars_speed, auto_register=True):
+        self.neighbours_jid = {}
         self.cars_speed = cars_speed
-        self.init_crossroad(neighbours)
-        super().start(auto_register)
-        print("Hello World! I'm agent {}".format(str(self.jid)))
+
+    def on_subscribe(self, jid):
+        if jid == self.manager_jid:
+            print(f"[{self.jid}] Agent {jid} asked for subscription - approving")
+            self.presence.approve(jid)
 
     def __str__(self):
         return "Agent: {}".format(self.jid)
 
+    def start(self, neighbours, auto_register=True):
+        self.neighbours = neighbours
+        super().start()
+
     def setup(self):
-        self.add_behaviour(get_cars.GetCars(self, self.cars_speed))
-        self.add_behaviour(report_situation.ReportSituation([self]))
-        self.add_behaviour(change_lights.ChangeLights(self))
+        print(f"[{self.jid}] Hello World! I'm agent {self.jid}")
+        self.presence.on_subscribe = self.on_subscribe
+
+        # Update topology - waiting for request from manager
+        template_msg = Template()
+        template_msg.sender = self.manager_jid
+        template_msg.set_metadata = {'performative': 'request'}
+        self.add_behaviour(UpdateTopology(period=1), template_msg)
+
+        # Reporting to manager
+        self.add_behaviour(SendReportToManager())
+
+        # Get data from sensors
+        self.add_behaviour(GetCars())
+
+        # Control lights
+        self.add_behaviour(ChangeLights())
