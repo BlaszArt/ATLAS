@@ -18,6 +18,7 @@ class SendReportForSubscribers(CyclicBehaviour):
                 await self.send(msg)
             except Exception:
                 pass
+        await asyncio.sleep(1)
 
 
 class ReceiveReport(CyclicBehaviour):
@@ -28,6 +29,7 @@ class ReceiveReport(CyclicBehaviour):
         msg = await self.receive()
         if msg:
             self.agent.reports[msg.sender] = msg.body
+        await asyncio.sleep(1)
 
 
 class ReportSituation(PeriodicBehaviour):
