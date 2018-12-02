@@ -76,7 +76,7 @@ class ManagingTopology(FSMBehaviour):
             self.set_next_state("check_topology")
 
     async def on_start(self):
-        print(f"[{self.agent.jid}] FSM starting at initial state {self.current_state}")
+        print(f"[{self.agent.jid}] FSM Managing topology starting at initial state {self.current_state}")
         self.add_state(name="check_topology", state=self.CheckTopology(), initial=True)
         self.add_state(name="no_changes", state=self.NoTopologyChanges())
         self.add_state(name="broadcast_topology", state=self.BroadcastTopology())
@@ -86,4 +86,4 @@ class ManagingTopology(FSMBehaviour):
         self.add_transition(source="broadcast_topology", dest="check_topology")
 
     async def on_end(self):
-        print(f"[{self.agent.jid}] FSM finished at state {self.current_state}")
+        print(f"[{self.agent.jid}] FSM Managing topology finished at state {self.current_state}")
