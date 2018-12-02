@@ -4,20 +4,19 @@ import asyncio
 import datetime
 
 
-class SendReportForSubscribers(CyclicBehaviour):
+class SendReportToManager(CyclicBehaviour):
     """
     Crossroad behaviour for sending report to subscribers
     """
     async def run(self):
-        for agent in self.agent.presence.get_contacts():
-            # send report
-            msg = Message(to=str(agent))
-            msg.set_metadata("performative", "inform")
-            msg.body = self.agent.crossroad.get_status()
-            try:
-                await self.send(msg)
-            except Exception:
-                pass
+        # send report
+        msg = Message(to=self.agent.manager_jid)
+        msg.set_metadata("performative", "inform")
+        msg.body = self.agent.crossroad.get_status()
+        try:
+            await self.send(msg)
+        except Exception:
+            pass
         await asyncio.sleep(1)
 
 

@@ -2,7 +2,7 @@ from spade.agent import Agent
 from spade.template import Template
 from behaviours.environment import GetCars, ChangeLights
 from behaviours.topology import UpdateTopology
-from behaviours.reporting import SendReportForSubscribers
+from behaviours.reporting import SendReportToManager
 from models import crossroad
 from models.directions import Directions
 
@@ -42,10 +42,10 @@ class CrossroadAgent(Agent):
         self.add_behaviour(UpdateTopology(period=1), template_msg)
 
         # Reporting to manager
-        self.add_behaviour(SendReportForSubscribers())
+        self.add_behaviour(SendReportToManager())
 
         # Get data from sensors
-        self.add_behaviour(GetCars(self))
+        self.add_behaviour(GetCars())
 
         # Control lights
-        self.add_behaviour(ChangeLights(self))
+        self.add_behaviour(ChangeLights())
