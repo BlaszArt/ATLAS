@@ -1,6 +1,8 @@
 from spade.agent import Agent
 from spade.template import Template
-from behaviours import change_lights, get_cars, report_situation, topology
+from behaviours import change_lights, get_cars
+from behaviours.topology import UpdateTopology
+from behaviours.reporting import SendReportForSubscribers
 from models import crossroad
 from models.directions import Directions
 
@@ -46,8 +48,10 @@ class CrossroadAgent(Agent):
         template_msg = Template()
         template_msg.sender = self.manager_jid
         template_msg.set_metadata = {'performative': 'request'}
-        self.add_behaviour(topology.UpdateTopology(period=1), template_msg)
+        self.add_behaviour(UpdateTopology(period=1), template_msg)
 
+        # Reporting to manager
+        self.add_behaviour(SendReportForSubscribers())
         #self.add_behaviour(get_cars.GetCars(self, self.cars_speed))
         #self.add_behaviour(report_situation.ReportSituation([self]))
         #self.add_behaviour(change_lights.ChangeLights(self))
