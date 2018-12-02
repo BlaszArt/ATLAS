@@ -4,29 +4,14 @@ import datetime
 
 
 class ReportSituation(CyclicBehaviour):
-    def __init__(self, agents):
-        super(ReportSituation, self).__init__()
-        self.agents = agents
-
-    async def on_start(self):
-        pass
-
+    """
+    Manager behaviour for raporting situation in system based on subscribed data
+    """
     async def run(self):
-        if len(self.agents) > 1:
-            print()
-            print(' --------- summary ----------')
-        else:
-            print()
+        print()
+        print(f" --------- [{datetime.datetime.now()}] ----------")
 
-        for agent in self.agents:
-            print()
-            print(datetime.datetime.now())
-            print(agent.jid)
-            print('Lights: ' + str(agent.crossroad.lights))
-            print('Cars: ' + str(agent.crossroad.cars))
+        for agent, data in self.agent.presence.get_contacts().items():
+            print(f"[{agent}] {data}")
 
-        if len(self.agents) > 1:
-            print()
-            print(' --------- end of summary ----------')
-            print()
         await asyncio.sleep(5)
