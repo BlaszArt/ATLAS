@@ -52,7 +52,6 @@ class ManagingTopology(FSMBehaviour):
         FSM state executed when topology not changed
         """
         async def run(self):
-            print(f"[{self.agent.jid}] There were not changes in topology")
             self.set_next_state("check_topology")
             await asyncio.sleep(10)
 
