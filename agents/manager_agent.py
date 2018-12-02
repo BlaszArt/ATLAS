@@ -1,6 +1,6 @@
 from spade.agent import Agent
 
-from behaviours import report_situation
+from behaviours.reporting import ReportSituation
 from behaviours.topology import ManagingTopology
 
 
@@ -16,4 +16,4 @@ class ManagerAgent(Agent):
         self.add_behaviour(ManagingTopology())
 
         # Reporting behaviour
-        #self.add_behaviour(report_situation.ReportSituation())
+        self.add_behaviour(ReportSituation())
