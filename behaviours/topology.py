@@ -21,7 +21,7 @@ class UpdateTopology(PeriodicBehaviour):
             print(f"[{self.agent.jid}] Got message with new topology")
             msg_dict = json.loads(msg.body)
             self.agent.crossroad.roads = msg_dict['roads']
-            self.agent.neighbour_jid = msg_dict['neighbours']
+            self.agent.neighbours_jid = msg_dict['neighbours']
             for street in msg_dict['streets']:
                 self.agent.crossroad.cars[street] = 0 if street not in self.agent.crossroad.cars else self.agent.crossroad.cars[street]
                 self.agent.crossroad.lights[street] = 0
