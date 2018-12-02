@@ -11,6 +11,7 @@ class CrossroadAgent(Agent):
         self.manager_jid = manager_jid
         self.crossroad = crossroad.Crossroad()
         self.neighbours = {}
+        self.neighbours_jid = []
         self.cars_speed = 0
 
     def init_crossroad(self, neighbours):
@@ -26,11 +27,18 @@ class CrossroadAgent(Agent):
             self.crossroad.cars[street] = 0
             self.crossroad.lights[street] = 1 if i % 2 else 0
 
+    def on_subscribe(self, jid):
+        if jid == self.manager_jid:
+            print(f"[{self.jid}] Agent {jid} asked for subscription - approving")
+            self.presence.approve(jid)
+
     def __str__(self):
         return "Agent: {}".format(self.jid)
 
     def setup(self):
         print(f"[{self.jid}] Hello World! I'm agent {self.jid}")
+        self.presence.on_subscribe = self.on_subscribe
+        # wait for topology - set unavailable for that moment
         self.presence.set_unavailable()
         self.presence.set_presence(status='No topology')
 
