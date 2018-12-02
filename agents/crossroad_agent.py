@@ -15,30 +15,24 @@ class CrossroadAgent(Agent):
         self.neighbours_jid = {}
         self.cars_speed = cars_speed
 
-    def on_subscribe(self, jid):
-        if jid == self.manager_jid:
-            print(f"[{self.jid}] Agent {jid} asked for subscription - approving")
-            self.presence.approve(jid)
-
     def __str__(self):
         return "Agent: {}".format(self.jid)
 
-    def start(self, neighbours, auto_register=True):
+    def start_crossroad(self, neighbours, auto_register=True):
         self.neighbours = neighbours
-        super().start()
+        super().start(auto_register)
 
     def setup(self):
         print(f"[{self.jid}] Hello World! I'm agent {self.jid}")
-        self.presence.on_subscribe = self.on_subscribe
 
         # Update topology - waiting for request from manager
         template_msg = Template()
         template_msg.sender = self.manager_jid
-        template_msg.set_metadata = {'performative': 'request'}
+        template_msg.set_metadata = ('performative', 'request')
         self.add_behaviour(UpdateTopology(period=1), template_msg)
 
         # Reporting to manager
-        self.add_behaviour(SendReportToManager())
+        self.add_behaviour(SendReportToManager(period=5))
 
         # Get data from sensors
         self.add_behaviour(GetCars())
