@@ -68,11 +68,15 @@ class ManagingTopology(FSMBehaviour):
         async def run(self):
             print(f"[{self.agent.jid}] There were changes in topology")
             for agent, topology in self.read_topology().items():
+                # broadcast new topology
                 msg = Message(to=agent)
                 msg.set_metadata("performative", "request")
                 msg.body = json.dumps(topology)
-                print(f"[{self.agent.jid}] {msg.body}")
                 await self.send(msg)
+                # subscribe new agent
+                if agent not in self.agent.presence.get_contacts():
+                    self.agent.presence.subscribe(agent)
+
             self.set_next_state("check_topology")
 
     async def on_start(self):
