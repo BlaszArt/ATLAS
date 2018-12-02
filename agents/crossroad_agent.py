@@ -4,7 +4,6 @@ from behaviours.environment import GetCars, ChangeLights
 from behaviours.topology import UpdateTopology
 from behaviours.reporting import SendReportToManager
 from models import crossroad
-from models.directions import Directions
 
 
 class CrossroadAgent(Agent):
@@ -31,9 +30,6 @@ class CrossroadAgent(Agent):
     def setup(self):
         print(f"[{self.jid}] Hello World! I'm agent {self.jid}")
         self.presence.on_subscribe = self.on_subscribe
-        # wait for topology - set unavailable for that moment
-        self.presence.set_unavailable()
-        self.presence.set_presence(status='No topology')
 
         # Update topology - waiting for request from manager
         template_msg = Template()
