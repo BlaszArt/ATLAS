@@ -10,13 +10,16 @@ class ChangeLights(CyclicBehaviour):
     def road_occupancy(self):
         return {road: self.how_busy_is_road(streets) for road, streets in self.agent.crossroad.roads.items()}
 
+    def green_for_max_busy_road(self):
+        road_occupancy = self.road_occupancy()
+        max_busy_road = max(road_occupancy, key=road_occupancy.get)
+        lights_to_change = self.agent.crossroad.roads[max_busy_road]
+        for street in self.agent.crossroad.lights:
+            self.agent.crossroad.lights[street] = 1 if street in lights_to_change else 0
+
     async def run(self):
         if len(self.agent.crossroad.roads) > 0:
-            road_occupancy = self.road_occupancy()
-            max_busy_road = max(road_occupancy, key=road_occupancy.get)
-            lights_to_change = self.agent.crossroad.roads[max_busy_road]
-            for street in self.agent.crossroad.lights:
-                self.agent.crossroad.lights[street] = 1 if street in lights_to_change else 0
+            self.green_for_max_busy_road()
         await asyncio.sleep(15)
 
 
