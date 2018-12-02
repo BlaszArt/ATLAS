@@ -19,9 +19,13 @@ class UpdateTopology(PeriodicBehaviour):
         msg = await self.receive()
         if msg:
             print(f"[{self.agent.jid}] Got message with new topology")
+            msg_dict = json.loads(msg.body)
+            self.agent.crossroad.roads = msg_dict['roads']
+            self.agent.neighbour_jid = msg_dict['neighbours']
+            for street in msg_dict['streets']:
+                self.agent.crossroad.cars[street] = 0 if street not in self.agent.crossroad.cars else self.agent.crossroad.cars[street]
+                self.agent.crossroad.lights[street] = 0
             self.agent.presence.set_available()
-            self.agent.presence.set_presence(status=json.loads(msg.body))
-            print(f"[{self.agent.jid}] {self.agent.presence.status}")
 
 
 class ManagingTopology(FSMBehaviour):
