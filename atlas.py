@@ -14,6 +14,7 @@
 from agents.crossroad_agent import CrossroadAgent
 from agents.manager_agent import ManagerAgent
 import time
+from web.web import Web
 
 if __name__ == '__main__':
     ca1 = CrossroadAgent(jid="ca1@jabbim.pl", password="crossroad1", manager_jid="ma1@jabbim.pl", cars_speed=2)
@@ -26,6 +27,9 @@ if __name__ == '__main__':
     ca3.start_crossroad(neighbours={'N': ca1, 'E': ca4})
     ca4.start_crossroad(neighbours={'N': ca2, 'W': ca3})
     ma1.start()
+
+    agents = [ca1, ca2, ca3, ca4, ma1]
+    Web.generate_web(agents, open_tab=True)
 
     print("Wait until user interrupts with ctrl+C")
     while True:
