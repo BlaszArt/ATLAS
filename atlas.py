@@ -28,6 +28,7 @@ if __name__ == '__main__':
     ca4.start_crossroad(neighbours={'N': ca2, 'W': ca3})
     ma1.start()
 
+    time.sleep(5)
     agents = [ca1, ca2, ca3, ca4, ma1]
     Web.generate_web(agents, open_tab=True)
 

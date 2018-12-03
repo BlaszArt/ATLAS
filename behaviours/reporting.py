@@ -8,6 +8,7 @@ class SendReportToManager(PeriodicBehaviour):
     """
     Crossroad behaviour for sending report to subscribers
     """
+
     async def on_start(self):
         await asyncio.sleep(10)
 

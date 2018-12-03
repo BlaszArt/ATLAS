@@ -2,6 +2,7 @@ from spade.agent import Agent
 from spade.template import Template
 from behaviours.reporting import ReportSituation, ReceiveReport
 from behaviours.topology import ManagingTopology
+import config
 
 
 class ManagerAgent(Agent):
@@ -19,5 +20,5 @@ class ManagerAgent(Agent):
         # Reporting behaviours
         template_msg = Template()
         template_msg.set_metadata = ('performative', 'inform')
-        self.add_behaviour(ReceiveReport(period=1), template=template_msg)
-        self.add_behaviour(ReportSituation(period=5))
+        self.add_behaviour(ReceiveReport(period=config.RECEIVE_REPORT_FREQ), template=template_msg)
+        self.add_behaviour(ReportSituation(period=config.REPORT_SITUATION_FREQ))

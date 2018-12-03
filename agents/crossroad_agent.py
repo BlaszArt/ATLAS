@@ -4,6 +4,7 @@ from behaviours.environment import GetCars, ChangeLights
 from behaviours.topology import UpdateTopology
 from behaviours.reporting import SendReportToManager
 from models import crossroad
+import config
 
 
 class CrossroadAgent(Agent):
@@ -29,13 +30,13 @@ class CrossroadAgent(Agent):
         template_msg = Template()
         template_msg.sender = self.manager_jid
         template_msg.set_metadata = ('performative', 'request')
-        self.add_behaviour(UpdateTopology(period=1), template_msg)
+        self.add_behaviour(UpdateTopology(period=config.UPDATE_TOPOLOGY_FREQ), template_msg)
 
         # Reporting to manager
         self.add_behaviour(SendReportToManager(period=5))
 
         # Get data from sensors
-        self.add_behaviour(GetCars())
+        self.add_behaviour(GetCars(period=config.GET_CARS_FREQ))
 
         # Control lights
-        self.add_behaviour(ChangeLights())
+        self.add_behaviour(ChangeLights(config.CHANGE_LIGHTS_FREQ))

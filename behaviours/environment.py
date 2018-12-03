@@ -1,9 +1,9 @@
-from spade.behaviour import CyclicBehaviour
+from spade.behaviour import PeriodicBehaviour
+
 from models.directions import Directions
-import asyncio
 
 
-class ChangeLights(CyclicBehaviour):
+class ChangeLights(PeriodicBehaviour):
     def how_busy_is_road(self, streets):
         return sum([self.agent.crossroad.cars[street] for street in streets])
 
@@ -20,17 +20,16 @@ class ChangeLights(CyclicBehaviour):
     async def run(self):
         if len(self.agent.crossroad.roads) > 0:
             self.green_for_max_busy_road()
-        await asyncio.sleep(15)
 
 
-class GetCars(CyclicBehaviour):
+class GetCars(PeriodicBehaviour):
     """
     Crossroad behaviour for getting data about cars on streets
     """
+
     async def run(self):
         for street in self.agent.crossroad.cars:
             self.simulator(street)
-        await asyncio.sleep(5)
 
     def simulator(self, street):
         if street not in self.agent.neighbours:
@@ -39,4 +38,5 @@ class GetCars(CyclicBehaviour):
         if self.agent.crossroad.lights[street] and self.agent.crossroad.cars[street] >= self.agent.cars_speed:
             self.agent.crossroad.cars[street] -= self.agent.cars_speed
             if Directions.get_opposite_dir_name(street) in self.agent.neighbours:
-                self.agent.neighbours[Directions.get_opposite_dir_name(street)].crossroad.cars[street] += self.agent.cars_speed
+                self.agent.neighbours[Directions.get_opposite_dir_name(street)].crossroad.cars[
+                    street] += self.agent.cars_speed
