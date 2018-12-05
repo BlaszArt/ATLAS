@@ -37,6 +37,7 @@ class ManagingTopology(FSMBehaviour):
 
         async def run(self):
             self.set_next_state("send_topology_and_subscribe") if self.has_stamp_changed() else self.set_next_state("check_topology")
+            await asyncio.sleep(1)
 
     class SendTopologyAndSubscribe(State):
         """
