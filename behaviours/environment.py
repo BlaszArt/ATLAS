@@ -8,6 +8,12 @@ class ChangeLights(PeriodicBehaviour):
     # static variable to now when try to change lights state
     A_LOT_OF_CARS = 5
 
+    def how_busy_is_road(self, streets):
+        return sum([self.agent.crossroad.cars[street] for street in streets])
+
+    def road_occupancy(self):
+        return {road: self.how_busy_is_road(data['streets']) for road, data in self.agent.crossroad.roads.items()}
+
     def green_for_max_busy_road(self):
         self.agent.directions_max_cars = self.get_roads_with_max_cars()
 
@@ -15,6 +21,13 @@ class ChangeLights(PeriodicBehaviour):
             if cars >= ChangeLights.A_LOT_OF_CARS:
                 self.agent.add_behaviour(CrossroadsMessanger.NegotiatingProtocolInitiator())
                 break
+
+        # to co bylo wczesniej, na potrzeby symulacji
+        road_occupancy = self.road_occupancy()
+        max_busy_road = max(road_occupancy, key=road_occupancy.get)
+        lights_to_change = self.agent.crossroad.roads[max_busy_road]['streets']
+        for street in self.agent.crossroad.lights:
+            self.agent.crossroad.lights[street] = 1 if street in lights_to_change else 0
 
     #todo: powinna zwrocic zestaw: kierunek: najwieksza liczba samochodow, a zwraca te sama, niekiedy zrypana wartosc w obu kierunkach
     # np. dla samochodow na ulicach: N=5, S=3, E=1, W=10 powinno zwrocic: NS: 5, EW: 10

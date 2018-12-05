@@ -53,6 +53,7 @@ class AlgorithmFunctions:
         init_change_for = cfp_message.get_metadata(messages_body_labels.change_by)
 
         # getting data of potential changes on participant crossroad
+        # print('[{}] EW: {}'.format(participant.jid, participant.directions_max_cars['EW'])) # close look at it needed - sometimes gets exception on EW value...
         part_potential_change_time = AlgorithmFunctions.cars_to_time(
             abs(participant.directions_max_cars['NS'] - participant.directions_max_cars['EW']))
         part_potential_change_dir = max(participant.directions_max_cars.items(), key=operator.itemgetter(1))[0]

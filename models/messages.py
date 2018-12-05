@@ -53,10 +53,10 @@ class CrossroadsMessages:
         return msg
 
     @staticmethod
-    def build_cpf_inform(received_message, ok=True):
+    def build_cpf_inform(received_message, ok):
         msg = received_message.make_reply()
         msg.set_metadata(CrossroadsMessages.PERFORMATIVE, CrossroadsMessages.INFORM)
-        msg.body = ok
+        msg.body = str(ok)
         # print("[{}] posylam do [{}] INFORM".format(received_message.to, msg.to))
         return msg
 

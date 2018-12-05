@@ -6,7 +6,6 @@ from models.messages import CrossroadsMessages
 
 
 class CrossroadsMessanger:
-
     WAITING_FOR_CHANGE_LIGHTS_NEED = "WAITING_FOR_CHANGE_LIGHTS_NEED"
     SEND_CFP = "SEND_CFP"
     WAITING_FOR_PROPOSALS = "WAITING_FOR_PROPOSALS"
@@ -16,13 +15,16 @@ class CrossroadsMessanger:
     class NegotiatingProtocolInitiator(FSMBehaviour):
 
         async def on_start(self):
-            self.add_state(name=CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED, state=self.ChangeLightsNeededSetData(), initial=True)
+            self.add_state(name=CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED,
+                           state=self.ChangeLightsNeededSetData(), initial=True)
             self.add_state(name=CrossroadsMessanger.SEND_CFP, state=self.SendCFP())
             self.add_state(name=CrossroadsMessanger.WAITING_FOR_PROPOSALS, state=self.WaitingForProposals())
-            self.add_state(name=CrossroadsMessanger.WAITING_FOR_INFORMS,state=self.WaitingForInforms())
-            self.add_transition(source=CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED, dest=CrossroadsMessanger.SEND_CFP)
+            self.add_state(name=CrossroadsMessanger.WAITING_FOR_INFORMS, state=self.WaitingForInforms())
+            self.add_transition(source=CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED,
+                                dest=CrossroadsMessanger.SEND_CFP)
             self.add_transition(source=CrossroadsMessanger.SEND_CFP, dest=CrossroadsMessanger.WAITING_FOR_PROPOSALS)
-            self.add_transition(source=CrossroadsMessanger.WAITING_FOR_PROPOSALS, dest=CrossroadsMessanger.WAITING_FOR_INFORMS)
+            self.add_transition(source=CrossroadsMessanger.WAITING_FOR_PROPOSALS,
+                                dest=CrossroadsMessanger.WAITING_FOR_INFORMS)
 
         class ChangeLightsNeededSetData(State):
             async def run(self):
@@ -36,45 +38,67 @@ class CrossroadsMessanger:
             async def run(self):
                 # print("[{}] jestem w stanie SEND CFP".format(self.agent.jid))
 
-                # build request for changing lights => CFP message of Protocol
-                for message in self.build_messages():
-                    await self.send(message)
+                await self.send_cfp_messages(self.build_cfp_messages())
                 self.set_next_state(CrossroadsMessanger.WAITING_FOR_PROPOSALS)
 
-            def build_messages(self):
+            def build_cfp_messages(self):
                 messages = []
                 for neighbour_jid in self.agent.neighbours_jid.values():
                     messages.append(CrossroadsMessages.build_cfp(neighbour_jid, self.agent))
                 return messages
 
+            async def send_cfp_messages(self, messages):
+                for message in messages:
+                    await self.send(message)
+
         class WaitingForProposals(State):
+            def __init__(self):
+                super().__init__()
+                self.neigh_send_proposal_cnt = 0
+                self.acc_proposal_jid = None
+
             async def run(self):
                 # print("[{}] jestem w stanie WAITING PROPOSALS".format(self.agent.jid))
 
-                proposals = {neighbour_jid: None for neighbour_jid in self.agent.neighbours_jid.values()}
-                neigh_send_proposal_cnt = 0
+                proposals = {}
 
-                # collect proposals neighbours
-                while neigh_send_proposal_cnt != len(self.agent.neighbours_jid):
+                while self.not_all_neighoburs_send_proposals():
                     # timeout set randomly to let agent collect answers
                     msg = await self.receive(timeout=5)
-                    if msg and msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.PROPOSE:
-                        # msg.sender is fucked up, so its easier to get sender jid via formating it to string than from dict
-                        proposals["{}".format(msg.sender)] = msg
-                        neigh_send_proposal_cnt += 1
+                    self.if_proposal_add_to_proposals(msg, proposals)
 
+                self.set_sender_of_best_proposal(proposals)
+
+                await self.send_decisions_about_proposals(proposals)
+
+                self.set_next_state(CrossroadsMessanger.WAITING_FOR_INFORMS)
+
+            def not_all_neighoburs_send_proposals(self):
+                return self.neigh_send_proposal_cnt != len(self.agent.neighbours_jid)
+
+            def if_proposal_add_to_proposals(self, msg, proposals):
+                if self.is_proposal(msg):
+                    # msg.sender is fucked up, so its easier to get sender jid via formating it to string than from dict
+                    proposals["{}".format(msg.sender)] = msg
+                    self.neigh_send_proposal_cnt += 1
+
+            def is_proposal(self, msg):
+                return msg and msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.PROPOSE
+
+            def set_sender_of_best_proposal(self, proposals):
                 max_change_for = 0
-                acc_proposal_jid = None
+                best_proposal_jid = None
 
-                # finding best proposal sender
                 for neighbour_jid, proposal in proposals.items():
                     if proposal.get_metadata(messages_body_labels.can_you):
                         if max_change_for < proposal.get_metadata(messages_body_labels.change_by):
-                            acc_proposal_jid = neighbour_jid
+                            best_proposal_jid = neighbour_jid
 
-                # sending accept to best proposal sender and reject to the rest
+                self.acc_proposal_jid = best_proposal_jid
+
+            async def send_decisions_about_proposals(self, proposals):
                 for neighbour_jid, proposal in proposals.items():
-                    if neighbour_jid == acc_proposal_jid:
+                    if self.is_accepted_proposal_sender(neighbour_jid):
                         # TODO: NASTAWIC TU COS W AGENCIE, ABY WIEDZIAL O ILE SKROCIC I/LUB WYDLUZYC KONKRETNE SWIATLA
                         # kierunek nastaw zna (self.cfp[messages_body_labels.direction]), ale czas na wydluzenie/skrocenie przychodzi z proposalem
                         # jesli direction z cfp jest inny niz aktualny kierunek zielonego to odjac czas od pozostalego do zmiany swiatla
@@ -82,34 +106,53 @@ class CrossroadsMessanger:
                     else:
                         await self.send(CrossroadsMessages.build_cfp_rejected_proposal(proposal))
 
-                self.set_next_state(CrossroadsMessanger.WAITING_FOR_INFORMS)
+            def is_accepted_proposal_sender(self, neighbour_jid):
+                return self.acc_proposal_jid == neighbour_jid
 
         class WaitingForInforms(State):
+            def __init__(self):
+                super().__init__()
+                self.neigh_send_inform_cnt = 0
+
             async def run(self):
                 # print("[{}] jestem w stanie WAITING INFORM".format(self.agent.jid))
-                neigh_send_inform_cnt = 0
 
-                # collect inform messages from all neighbours to finish protocol
-                while neigh_send_inform_cnt != len(self.agent.neighbours_jid):
+                while self.not_all_neighoburs_send_informs():
                     msg = await self.receive(timeout=5)
-                    if msg and msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.INFORM:
-                        neigh_send_inform_cnt += 1
+                    self.collect_inform_from_neighbour(msg)
 
                 # print("[{}] SZKONCZYLEM PROTOKOL!!!!".format(self.agent.jid))
+
+            def not_all_neighoburs_send_informs(self):
+                return self.neigh_send_inform_cnt != len(self.agent.neighbours_jid)
+
+            def collect_inform_from_neighbour(self, msg):
+                if self.is_inform(msg):
+                    self.neigh_send_inform_cnt += 1
+
+            def is_inform(self, msg):
+                return msg and msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.INFORM
 
     class NegotiatingProtocolParticipant(CyclicBehaviour):
         async def run(self):
             reply = None
             msg = await self.receive()
             if msg:
-                # if got CFP, create proposal to answear it
-                if msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.CFP:
+                if self.is_cfp(msg):
                     reply = CrossroadsMessages.build_cfp_propose(participant=self.agent, received_cfp=msg)
-
-                # if both ACCEPT (initiatior accept your proposal) or REJECT, send ok to end protocol
-                if msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.ACCEPT_PROPOSAL:
+                elif self.is_accept_proposal(msg):
                     reply = CrossroadsMessages.build_cpf_inform(received_message=msg, ok=True)
-                if msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.REJECT_PROPOSAL:
+                elif self.is_reject_proposal(msg):
                     reply = CrossroadsMessages.build_cpf_inform(received_message=msg, ok=False)
+
                 if reply:
                     await self.send(reply)
+
+        def is_cfp(self, msg):
+            return msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.CFP
+
+        def is_accept_proposal(self, msg):
+            return msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.ACCEPT_PROPOSAL
+
+        def is_reject_proposal(self, msg):
+            return msg.get_metadata(CrossroadsMessages.PERFORMATIVE) == CrossroadsMessages.REJECT_PROPOSAL
