@@ -3,14 +3,6 @@ from spade.message import Message
 import asyncio, os, json
 
 
-class SubscribeManager(OneShotBehaviour):
-    """
-    Crossroad agent behaviour for starting subscribing manager
-    """
-    async def run(self):
-        self.agent.presence.subscribe(self.agent.manager_jid)
-
-
 class UpdateTopology(PeriodicBehaviour):
     """
     Crossroad agent behaviour to update own topology based on manager status
