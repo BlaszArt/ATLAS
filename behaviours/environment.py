@@ -9,10 +9,10 @@ class ChangeLights(PeriodicBehaviour):
     A_LOT_OF_CARS = 5
 
     def how_busy_is_road(self, streets):
-        return sum([self.agent.crossroad.cars[street] for street in streets])
+        return sum([self.agent.cars[street] for street in streets])
 
     def road_occupancy(self):
-        return {road: self.how_busy_is_road(data['streets']) for road, data in self.agent.crossroad.roads.items()}
+        return {road: self.how_busy_is_road(data['streets']) for road, data in self.agent.roads.items()}
 
     def green_for_max_busy_road(self):
         self.agent.directions_max_cars = self.get_roads_with_max_cars()
@@ -25,24 +25,30 @@ class ChangeLights(PeriodicBehaviour):
         # to co bylo wczesniej, na potrzeby symulacji
         road_occupancy = self.road_occupancy()
         max_busy_road = max(road_occupancy, key=road_occupancy.get)
-        lights_to_change = self.agent.crossroad.roads[max_busy_road]['streets']
-        for street in self.agent.crossroad.lights:
-            self.agent.crossroad.lights[street] = 1 if street in lights_to_change else 0
+
+        for road in self.agent.lights:
+            if road == max_busy_road:
+                self.agent.lights[road] = 1
+            self.agent.lights[road] = 0
+
+        #lights_to_change = self.agent.roads[max_busy_road]['streets']
+        #for street in self.agent.lights:
+        #    self.agent.lights[street] = 1 if street in lights_to_change else 0
 
     #todo: powinna zwrocic zestaw: kierunek: najwieksza liczba samochodow, a zwraca te sama, niekiedy zrypana wartosc w obu kierunkach
     # np. dla samochodow na ulicach: N=5, S=3, E=1, W=10 powinno zwrocic: NS: 5, EW: 10
     def get_roads_with_max_cars(self):
-        return {road: self.return_max_cars_on_road(data['streets']) for road, data in self.agent.crossroad.roads.items()}
+        return {road: self.return_max_cars_on_road(data['streets']) for road, data in self.agent.roads.items()}
 
     def return_max_cars_on_road(self, streets):
         max_cars = 0
         for street in streets:
-            if self.agent.crossroad.cars[street] > max_cars:
-                max_cars = self.agent.crossroad.cars[street]
+            if self.agent.cars[street] > max_cars:
+                max_cars = self.agent.cars[street]
         return max_cars
 
     async def run(self):
-        if len(self.agent.crossroad.roads) > 0:
+        if len(self.agent.roads) > 0:
             self.green_for_max_busy_road()
 
 
@@ -52,15 +58,17 @@ class GetCars(PeriodicBehaviour):
     """
 
     async def run(self):
-        for street in self.agent.crossroad.cars:
-            self.simulator(street)
 
-    def simulator(self, street):
-        if street not in self.agent.neighbours:
-            self.agent.crossroad.cars[street] += self.agent.cars_speed
+        for road, streets in self.agent.roads.items():
+            self.simulator(road, streets['streets'])
 
-        if self.agent.crossroad.lights[street] and self.agent.crossroad.cars[street] >= self.agent.cars_speed:
-            self.agent.crossroad.cars[street] -= self.agent.cars_speed
-            if Directions.get_opposite_dir_name(street) in self.agent.neighbours:
-                self.agent.neighbours[Directions.get_opposite_dir_name(street)].crossroad.cars[
-                    street] += self.agent.cars_speed
+    def simulator(self, road, streets):
+        for street in streets:
+            if street not in self.agent.neighbours:
+                self.agent.cars[street] += self.agent.cars_speed
+
+            if self.agent.lights[road] and self.agent.cars[street] >= self.agent.cars_speed:
+                self.agent.cars[street] -= self.agent.cars_speed
+                # if Directions.get_opposite_dir_name(road) in self.agent.neighbours:
+                #     self.agent.neighbours[Directions.get_opposite_dir_name(road)].cars[
+                #         street] += self.agent.cars_speed

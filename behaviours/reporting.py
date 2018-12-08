@@ -18,7 +18,7 @@ class SendReportForSubscribers(PeriodicBehaviour):
         for subscriber in self.agent.subscribers:
             msg = Message(to=str(subscriber))
             msg.set_metadata("performative", "inform")
-            msg.body = self.agent.crossroad.get_status()
+            msg.body = self.agent.get_status()
             try:
                 await self.send(msg)
             except Exception:

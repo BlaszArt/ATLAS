@@ -190,29 +190,5 @@
                 "weight": 1
             }
         }
-    },
-    "D3@jabbim.pl": {
-        "neighbours": {
-            "C3D3_0": "C3@jabbim.pl",
-            "D2D3_0": "D2@jabbim.pl",
-            "D4D3_0": "D4@jabbim.pl",
-            "E3D3_0": "E3@jabbim.pl"
-        },
-        "roads": {
-            "horizontal": {
-                "streets": [
-                    "D4D3_0",
-                    "D2D3_0"
-                ],
-                "weight": 1
-            },
-            "vertical": {
-                "streets": [
-                    "D4D3_0",
-                    "D2D3_0"
-                ],
-                "weight": 1
-            }
-        }
     }
 }
