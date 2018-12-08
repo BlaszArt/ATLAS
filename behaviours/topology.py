@@ -1,12 +1,15 @@
-from spade.behaviour import OneShotBehaviour, PeriodicBehaviour, FSMBehaviour, State
-from spade.message import Message
-import asyncio, os, json
+import asyncio
+import json
+import os
 
+from spade.behaviour import PeriodicBehaviour, FSMBehaviour, State
+from spade.message import Message
 
 class UpdateTopology(PeriodicBehaviour):
     """
     Crossroad agent behaviour to update own topology based on manager status
     """
+
     async def run(self):
         msg = await self.receive()
         if msg:
@@ -15,7 +18,8 @@ class UpdateTopology(PeriodicBehaviour):
             self.agent.crossroad.roads = msg_dict['roads']
             self.agent.neighbours_jid = msg_dict['neighbours']
             for street in msg_dict['streets']:
-                self.agent.crossroad.cars[street] = 0 if street not in self.agent.crossroad.cars else self.agent.crossroad.cars[street]
+                self.agent.crossroad.cars[street] = 0 if street not in self.agent.crossroad.cars else \
+                    self.agent.crossroad.cars[street]
                 self.agent.crossroad.lights[street] = 0
 
 
@@ -23,10 +27,12 @@ class ManagingTopology(FSMBehaviour):
     """
     Manager final state machine behaviour for managing topology in system
     """
+
     class CheckTopology(State):
         """
         FSM state for checking if topology changed
         """
+
         def has_stamp_changed(self):
             stamp = os.stat(self.agent.topology_src).st_mtime
             if stamp != self.agent._cached_stamp:
@@ -43,6 +49,7 @@ class ManagingTopology(FSMBehaviour):
         """
         FSM state executed when topology changed. It sending actual topology to agent and sending subscribe request to them
         """
+
         def read_topology(self):
             with open(self.agent.topology_src, "r") as f:
                 topology = json.load(f)
