@@ -5,7 +5,6 @@ import os
 from spade.behaviour import PeriodicBehaviour, FSMBehaviour, State
 from spade.message import Message
 
-
 class UpdateTopology(PeriodicBehaviour):
     """
     Crossroad agent behaviour to update own topology based on manager status
@@ -22,7 +21,6 @@ class UpdateTopology(PeriodicBehaviour):
                 self.agent.crossroad.cars[street] = 0 if street not in self.agent.crossroad.cars else \
                     self.agent.crossroad.cars[street]
                 self.agent.crossroad.lights[street] = 0
-            self.agent.presence.set_available()
 
 
 class ManagingTopology(FSMBehaviour):
@@ -44,20 +42,12 @@ class ManagingTopology(FSMBehaviour):
                 return False
 
         async def run(self):
-            self.set_next_state("broadcast_topology") if self.has_stamp_changed() else self.set_next_state("no_changes")
+            self.set_next_state("send_topology_and_subscribe") if self.has_stamp_changed() else self.set_next_state("check_topology")
+            await asyncio.sleep(1)
 
-    class NoTopologyChanges(State):
+    class SendTopologyAndSubscribe(State):
         """
-        FSM state executed when topology not changed
-        """
-
-        async def run(self):
-            self.set_next_state("check_topology")
-            await asyncio.sleep(10)
-
-    class BroadcastTopology(State):
-        """
-        FSM state executed when topology changed
+        FSM state executed when topology changed. It sending actual topology to agent and sending subscribe request to them
         """
 
         def read_topology(self):
@@ -68,26 +58,24 @@ class ManagingTopology(FSMBehaviour):
         async def run(self):
             print(f"[{self.agent.jid}] There were changes in topology")
             for agent, topology in self.read_topology().items():
-                # broadcast new topology
+                # broadcast topology
                 msg = Message(to=agent)
                 msg.set_metadata("performative", "request")
                 msg.body = json.dumps(topology)
                 await self.send(msg)
-                # subscribe new agent
-                if agent not in self.agent.presence.get_contacts():
-                    self.agent.presence.subscribe(agent)
-
+                # send subscribe request
+                msg = Message(to=agent)
+                msg.set_metadata("performative", "subscribe")
+                await self.send(msg)
             self.set_next_state("check_topology")
 
     async def on_start(self):
         print(f"[{self.agent.jid}] FSM Managing topology starting at initial state {self.current_state}")
         self.add_state(name="check_topology", state=self.CheckTopology(), initial=True)
-        self.add_state(name="no_changes", state=self.NoTopologyChanges())
-        self.add_state(name="broadcast_topology", state=self.BroadcastTopology())
-        self.add_transition(source="check_topology", dest="no_changes")
-        self.add_transition(source="no_changes", dest="check_topology")
-        self.add_transition(source="check_topology", dest="broadcast_topology")
-        self.add_transition(source="broadcast_topology", dest="check_topology")
+        self.add_state(name="send_topology_and_subscribe", state=self.SendTopologyAndSubscribe())
+        self.add_transition(source="check_topology", dest="check_topology")
+        self.add_transition(source="check_topology", dest="send_topology_and_subscribe")
+        self.add_transition(source="send_topology_and_subscribe", dest="check_topology")
 
     async def on_end(self):
         print(f"[{self.agent.jid}] FSM Managing topology finished at state {self.current_state}")

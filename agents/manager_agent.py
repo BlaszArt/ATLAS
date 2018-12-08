@@ -22,3 +22,4 @@ class ManagerAgent(Agent):
         template_msg.set_metadata = ('performative', 'inform')
         self.add_behaviour(ReceiveReport(period=config.RECEIVE_REPORT_FREQ), template=template_msg)
         self.add_behaviour(ReportSituation(period=config.REPORT_SITUATION_FREQ))
+
