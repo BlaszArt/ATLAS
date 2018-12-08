@@ -11,21 +11,26 @@
 #    |        |
 #    S        S
 
-
-from agents import crossroad_agent, manager_agent
+from agents.crossroad_agent import CrossroadAgent
+from agents.manager_agent import ManagerAgent
 import time
+from web.web import Web
 
 if __name__ == '__main__':
-    ca1 = crossroad_agent.CrossroadAgent(jid="ca1@jabbim.pl", password="crossroad1", manager_jid="ma1@jabbim.pl", cars_speed=2)
-    ca2 = crossroad_agent.CrossroadAgent(jid="ca2@jabbim.pl", password="crossroad2", manager_jid="ma1@jabbim.pl", cars_speed=1)
-    ca3 = crossroad_agent.CrossroadAgent(jid="ca3@jabbim.pl", password="crossroad3", manager_jid="ma1@jabbim.pl", cars_speed=2)
-    ca4 = crossroad_agent.CrossroadAgent(jid="ca4@jabbim.pl", password="crossroad4", manager_jid="ma1@jabbim.pl", cars_speed=1)
-    ma1 = manager_agent.ManagerAgent("ma1@jabbim.pl", "manageragent1", topology='examples/topology_example.json')
-    ca1.start(neighbours={'S': ca4, 'W': ca1})
-    ca2.start(neighbours={'S': ca4, 'W': ca1})
-    ca3.start(neighbours={'N': ca1, 'E': ca4})
-    ca4.start(neighbours={'N': ca2, 'W': ca3})
+    ca1 = CrossroadAgent(jid="ca1@jabbim.pl", password="crossroad1", manager_jid="ma1@jabbim.pl", cars_speed=2)
+    ca2 = CrossroadAgent(jid="ca2@jabbim.pl", password="crossroad2", manager_jid="ma1@jabbim.pl", cars_speed=1)
+    ca3 = CrossroadAgent(jid="ca3@jabbim.pl", password="crossroad3", manager_jid="ma1@jabbim.pl", cars_speed=2)
+    ca4 = CrossroadAgent(jid="ca4@jabbim.pl", password="crossroad4", manager_jid="ma1@jabbim.pl", cars_speed=1)
+    ma1 = ManagerAgent("ma1@jabbim.pl", "manageragent1", topology='examples/topology_example.json')
+    ca1.start_crossroad(neighbours={'S': ca4, 'W': ca1})
+    ca2.start_crossroad(neighbours={'S': ca4, 'W': ca1})
+    ca3.start_crossroad(neighbours={'N': ca1, 'E': ca4})
+    ca4.start_crossroad(neighbours={'N': ca2, 'W': ca3})
     ma1.start()
+
+    time.sleep(5)
+    agents = [ca1, ca2, ca3, ca4, ma1]
+    Web.generate_web(agents, open_tab=True)
 
     print("Wait until user interrupts with ctrl+C")
     while True:

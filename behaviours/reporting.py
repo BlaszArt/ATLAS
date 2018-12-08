@@ -8,8 +8,13 @@ class SendReportForSubscribers(PeriodicBehaviour):
     """
     Crossroad behaviour for sending report to subscribers
     """
+
+    async def on_start(self):
+        await asyncio.sleep(10)
+
     async def run(self):
         # send report
+        
         for subscriber in self.agent.subscribers:
             msg = Message(to=str(subscriber))
             msg.set_metadata("performative", "inform")
@@ -30,22 +35,22 @@ class Subscribe(CyclicBehaviour):
             self.agent.subscribers.append(msg.sender)
         await asyncio.sleep(1)
 
-
-class ReceiveReport(CyclicBehaviour):
+class ReceiveReport(PeriodicBehaviour):
     """
     Manager behaviour for receiving report
     """
+
     async def run(self):
         msg = await self.receive()
         if msg:
             self.agent.reports[msg.sender] = msg.body
-        await asyncio.sleep(1)
 
 
 class ReportSituation(PeriodicBehaviour):
     """
     Manager behaviour for raporting situation in system based on subscribed data
     """
+
     async def run(self):
         print()
         print(f" --------- [{datetime.datetime.now()}] ----------")
@@ -53,4 +58,3 @@ class ReportSituation(PeriodicBehaviour):
         for agent, report in self.agent.reports.items():
             print(f"[{agent}] {report}")
         print(" -------------------------------------------------")
-        await asyncio.sleep(5)
