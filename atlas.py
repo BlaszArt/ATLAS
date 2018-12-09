@@ -40,7 +40,7 @@ if __name__ == '__main__':
     agents.append(M1)
 
     time.sleep(5)
-    Web.generate_web(agents, open_tab=True)
+    #Web.generate_web(agents, open_tab=True)
 
     print("Wait until user interrupts with ctrl+C")
     while True:

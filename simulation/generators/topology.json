@@ -1,10 +1,10 @@
 {
-    "B1@jabbim.pl": {
+    "B1@localhost": {
         "neighbours": {
-            "A1B1_0": "A1@jabbim.pl",
-            "B0B1_0": "B0@jabbim.pl",
-            "B2B1_0": "B2@jabbim.pl",
-            "C1B1_0": "C1@jabbim.pl"
+            "A1B1_0": "A1@localhost",
+            "B0B1_0": "B0@localhost",
+            "B2B1_0": "B2@localhost",
+            "C1B1_0": "C1@localhost"
         },
         "roads": {
             "horizontal": {
@@ -23,12 +23,12 @@
             }
         }
     },
-    "B2@jabbim.pl": {
+    "B2@localhost": {
         "neighbours": {
-            "A2B2_0": "A2@jabbim.pl",
-            "B1B2_0": "B1@jabbim.pl",
-            "B3B2_0": "B3@jabbim.pl",
-            "C2B2_0": "C2@jabbim.pl"
+            "A2B2_0": "A2@localhost",
+            "B1B2_0": "B1@localhost",
+            "B3B2_0": "B3@localhost",
+            "C2B2_0": "C2@localhost"
         },
         "roads": {
             "horizontal": {
@@ -47,12 +47,12 @@
             }
         }
     },
-    "B3@jabbim.pl": {
+    "B3@localhost": {
         "neighbours": {
-            "A3B3_0": "A3@jabbim.pl",
-            "B2B3_0": "B2@jabbim.pl",
-            "B4B3_0": "B4@jabbim.pl",
-            "C3B3_0": "C3@jabbim.pl"
+            "A3B3_0": "A3@localhost",
+            "B2B3_0": "B2@localhost",
+            "B4B3_0": "B4@localhost",
+            "C3B3_0": "C3@localhost"
         },
         "roads": {
             "horizontal": {
@@ -71,12 +71,12 @@
             }
         }
     },
-    "C1@jabbim.pl": {
+    "C1@localhost": {
         "neighbours": {
-            "B1C1_0": "B1@jabbim.pl",
-            "C0C1_0": "C0@jabbim.pl",
-            "C2C1_0": "C2@jabbim.pl",
-            "D1C1_0": "D1@jabbim.pl"
+            "B1C1_0": "B1@localhost",
+            "C0C1_0": "C0@localhost",
+            "C2C1_0": "C2@localhost",
+            "D1C1_0": "D1@localhost"
         },
         "roads": {
             "horizontal": {
@@ -95,12 +95,12 @@
             }
         }
     },
-    "C2@jabbim.pl": {
+    "C2@localhost": {
         "neighbours": {
-            "B2C2_0": "B2@jabbim.pl",
-            "C1C2_0": "C1@jabbim.pl",
-            "C3C2_0": "C3@jabbim.pl",
-            "D2C2_0": "D2@jabbim.pl"
+            "B2C2_0": "B2@localhost",
+            "C1C2_0": "C1@localhost",
+            "C3C2_0": "C3@localhost",
+            "D2C2_0": "D2@localhost"
         },
         "roads": {
             "horizontal": {
@@ -119,12 +119,12 @@
             }
         }
     },
-    "C3@jabbim.pl": {
+    "C3@localhost": {
         "neighbours": {
-            "B3C3_0": "B3@jabbim.pl",
-            "C2C3_0": "C2@jabbim.pl",
-            "C4C3_0": "C4@jabbim.pl",
-            "D3C3_0": "D3@jabbim.pl"
+            "B3C3_0": "B3@localhost",
+            "C2C3_0": "C2@localhost",
+            "C4C3_0": "C4@localhost",
+            "D3C3_0": "D3@localhost"
         },
         "roads": {
             "horizontal": {
@@ -143,12 +143,12 @@
             }
         }
     },
-    "D1@jabbim.pl": {
+    "D1@localhost": {
         "neighbours": {
-            "C1D1_0": "C1@jabbim.pl",
-            "D0D1_0": "D0@jabbim.pl",
-            "D2D1_0": "D2@jabbim.pl",
-            "E1D1_0": "E1@jabbim.pl"
+            "C1D1_0": "C1@localhost",
+            "D0D1_0": "D0@localhost",
+            "D2D1_0": "D2@localhost",
+            "E1D1_0": "E1@localhost"
         },
         "roads": {
             "horizontal": {
@@ -167,12 +167,12 @@
             }
         }
     },
-    "D2@jabbim.pl": {
+    "D2@localhost": {
         "neighbours": {
-            "C2D2_0": "C2@jabbim.pl",
-            "D1D2_0": "D1@jabbim.pl",
-            "D3D2_0": "D3@jabbim.pl",
-            "E2D2_0": "E2@jabbim.pl"
+            "C2D2_0": "C2@localhost",
+            "D1D2_0": "D1@localhost",
+            "D3D2_0": "D3@localhost",
+            "E2D2_0": "E2@localhost"
         },
         "roads": {
             "horizontal": {
@@ -191,12 +191,12 @@
             }
         }
     },
-    "D3@jabbim.pl": {
+    "D3@localhost": {
         "neighbours": {
-            "C3D3_0": "C3@jabbim.pl",
-            "D2D3_0": "D2@jabbim.pl",
-            "D4D3_0": "D4@jabbim.pl",
-            "E3D3_0": "E3@jabbim.pl"
+            "C3D3_0": "C3@localhost",
+            "D2D3_0": "D2@localhost",
+            "D4D3_0": "D4@localhost",
+            "E3D3_0": "E3@localhost"
         },
         "roads": {
             "horizontal": {

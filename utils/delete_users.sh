@@ -6,6 +6,7 @@ filtered_topology=$( echo "$topology" | grep -o '^[[:blank:]]*"..@localhost' | s
 for agent in $filtered_topology
 do
 
+echo $agent
 sudo prosodyctl deluser "$agent"
 
 done
