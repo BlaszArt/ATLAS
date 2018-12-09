@@ -23,12 +23,12 @@ class UpdateTopology(PeriodicBehaviour):
             for street in msg_dict['roads']['horizontal']['streets']:
                 self.agent.cars[street] = 0 if street not in self.agent.cars else \
                     self.agent.cars[street]
-            self.agent.lights['horizontal'] = 0
+                self.agent.lights[street] = 0
 
             for street in msg_dict['roads']['vertical']['streets']:
                 self.agent.cars[street] = 0 if street not in self.agent.cars else \
                     self.agent.cars[street]
-            self.agent.lights['vertical'] = 1
+                self.agent.lights[street] = 1
 
 
 class ManagingTopology(FSMBehaviour):

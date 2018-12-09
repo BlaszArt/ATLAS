@@ -20,4 +20,9 @@ class AgentsGenerator:
     @staticmethod
     def start_agents(agents):
         for agent in agents:
-            agent.start_crossroad()
+            agent.start()
+
+    @staticmethod
+    def stop_agents(agents):
+        for agent in agents:
+            agent.stop()

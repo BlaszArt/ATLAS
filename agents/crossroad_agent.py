@@ -34,9 +34,6 @@ class CrossroadAgent(Agent, Crossroad):
         else:
             return 'horizontal'
 
-    def start_crossroad(self, auto_register=True):
-        super().start(auto_register)
-
     def setup(self):
         print(f"[{self.jid}] Hello World! I'm agent {self.jid}")
 
