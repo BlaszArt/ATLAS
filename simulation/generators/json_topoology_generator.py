@@ -31,7 +31,7 @@ def create_topology_entry(junction_element):
 
 def create_roads_entry(lanes):
     vertical_road = {'streets': [lanes[0], lanes[2]], 'weight': 1}
-    horizontal_road = {'streets': [lanes[0], lanes[2]], 'weight': 1}
+    horizontal_road = {'streets': [lanes[1], lanes[3]], 'weight': 1}
     roads = {'vertical': vertical_road, 'horizontal': horizontal_road}
     return roads
 
