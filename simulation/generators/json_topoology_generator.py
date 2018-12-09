@@ -3,7 +3,7 @@ from config import ROOT_DIR_PATH
 import xml.etree.ElementTree as ET
 import json
 
-NET_XML_PATH_NAME = "simulation\\configuration\\simulation.net.xml"
+NET_XML_PATH_NAME = "simulation/configuration/simulation.net.xml"
 
 
 def generate_topology():
@@ -18,6 +18,7 @@ def generate_topology():
             topology_entries[entry_id] = entry_data
     with open('topology.json', 'w') as outfile:
         json.dump(topology_entries, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+
 
 def create_topology_entry(junction_element):
     entry_id = junction_element.get('id') + '@jabbim.pl'

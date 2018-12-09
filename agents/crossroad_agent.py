@@ -28,12 +28,6 @@ class CrossroadAgent(Agent, Crossroad):
     def __str__(self):
         return "Agent: {}".format(self.jid)
 
-    def get_actual_green_lights_direction(self):
-        if self.lights['vertical'] == 1:
-            return 'vertical'
-        else:
-            return 'horizontal'
-
     def start_crossroad(self, auto_register=True):
         super().start(auto_register)
 
@@ -55,10 +49,11 @@ class CrossroadAgent(Agent, Crossroad):
         self.add_behaviour(SendReportForSubscribers(period=1))
 
         # Get data from sensors
-        self.add_behaviour(GetCars(period=config.GET_CARS_FREQ))
+        #self.add_behaviour(GetCars(period=config.GET_CARS_FREQ))
 
         # Control lights
-        self.add_behaviour(ChangeLights(config.CHANGE_LIGHTS_FREQ))
+        #self.add_behaviour(ChangeLights(config.CHANGE_LIGHTS_FREQ))
 
         # Answering protocol
-        self.add_behaviour(CrossroadsMessanger.NegotiatingProtocolParticipant())
+        #self.add_behaviour(CrossroadsMessanger.NegotiatingProtocolParticipant())
+        self.add_behaviour(CrossroadsMessanger.NegotiatingProtocolInitiator())

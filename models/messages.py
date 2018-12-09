@@ -24,6 +24,8 @@ class CrossroadsMessages:
         msg.set_metadata(messages_body_labels.to_change, agent_sender.cfp[messages_body_labels.to_change])
         msg.set_metadata(messages_body_labels.change_by, agent_sender.cfp[messages_body_labels.change_by])
         # print("[{}] posylam do [{}] CFP".format(agent_sender.jid, msg.to))
+
+        print(msg)
         return msg
 
     @staticmethod

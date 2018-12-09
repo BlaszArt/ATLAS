@@ -3,7 +3,7 @@ from spade.behaviour import CyclicBehaviour, FSMBehaviour, State
 from behaviours.functions import AlgorithmFunctions
 from models import messages_body_labels
 from models.messages import CrossroadsMessages
-
+import asyncio
 
 class CrossroadsMessanger:
     WAITING_FOR_CHANGE_LIGHTS_NEED = "WAITING_FOR_CHANGE_LIGHTS_NEED"
@@ -25,12 +25,16 @@ class CrossroadsMessanger:
             self.add_transition(source=CrossroadsMessanger.SEND_CFP, dest=CrossroadsMessanger.WAITING_FOR_PROPOSALS)
             self.add_transition(source=CrossroadsMessanger.WAITING_FOR_PROPOSALS,
                                 dest=CrossroadsMessanger.WAITING_FOR_INFORMS)
+            await asyncio.sleep(15)
 
         class ChangeLightsNeededSetData(State):
             async def run(self):
                 # print("[{}] jestem w stanie SETDATA".format(self.agent.jid))
 
                 # collecting data for request of changing lights
+
+                print('Jestem w ' + CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED)
+
                 AlgorithmFunctions.set_what_to_do_with_lights(self.agent)
                 self.set_next_state(CrossroadsMessanger.SEND_CFP)
 
@@ -44,6 +48,7 @@ class CrossroadsMessanger:
             def build_cfp_messages(self):
                 messages = []
                 for neighbour_jid in self.agent.neighbours_jid.values():
+                    print(neighbour_jid)
                     messages.append(CrossroadsMessages.build_cfp(neighbour_jid, self.agent))
                 return messages
 
@@ -59,6 +64,7 @@ class CrossroadsMessanger:
 
             async def run(self):
                 # print("[{}] jestem w stanie WAITING PROPOSALS".format(self.agent.jid))
+                print('CZEKAM PAŁKI')
 
                 proposals = {}
 
@@ -120,6 +126,8 @@ class CrossroadsMessanger:
                 while self.not_all_neighoburs_send_informs():
                     msg = await self.receive(timeout=5)
                     self.collect_inform_from_neighbour(msg)
+
+                self.set_next_state(CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED)
 
                 # print("[{}] SZKONCZYLEM PROTOKOL!!!!".format(self.agent.jid))
 
