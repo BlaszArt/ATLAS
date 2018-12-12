@@ -18,3 +18,13 @@ ACCEPT-PROPOSAL - to samo co Propose, ale na bank na True
 REJECT-PROPOSAL - -||- ale z False
 
 INFORM - ok: True, potwierdzenie na sam koniec, nieistotne
+
+
+
+================= LINUX ================================
+1. Instalacja: sudo apt install prosody
+2. Podmienić plik /etc/prosody/prosody.cfg.lua na odpowiadający w folderze utils projektu
+3. Restart serwera prosody komendą: sudo prosodyctl restart
+4. Gotowe! W razie problemów z rejestracją agentów można uruchomić skrypty zamieszone w folderze utils.
+
+!! Format jid agentów: xx@localhost !!!!!

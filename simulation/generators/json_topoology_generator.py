@@ -3,7 +3,7 @@ from config import ROOT_DIR_PATH
 import xml.etree.ElementTree as ET
 import json
 
-NET_XML_PATH_NAME = "simulation\\configuration\\simulation.net.xml"
+NET_XML_PATH_NAME = "simulation/configuration/simulation.net.xml"
 
 
 def generate_topology():

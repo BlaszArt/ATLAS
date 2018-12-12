@@ -23,16 +23,13 @@ class CrossroadAgent(Agent, Crossroad):
                     # if we wanna last green longer (false) or change it quicker (true)
                     messages_body_labels.change_by: None}  # how much we wanna change lights remaining duration
         self.cars_speed = cars_speed
-        self.directions_max_cars = {'vertical': None, 'horizontal': None}  # directions and max cars on their streets
+        self.directions_max_cars = {'vertical': 0, 'horizontal': 0}  # directions and max cars on their streets
 
     def __str__(self):
         return "Agent: {}".format(self.jid)
 
-    def get_actual_green_lights_direction(self):
-        if self.lights['vertical'] == 1:
-            return 'vertical'
-        else:
-            return 'horizontal'
+    def start_crossroad(self, auto_register=True):
+        super().start(auto_register)
 
     def setup(self):
         print(f"[{self.jid}] Hello World! I'm agent {self.jid}")
@@ -52,10 +49,11 @@ class CrossroadAgent(Agent, Crossroad):
         self.add_behaviour(SendReportForSubscribers(period=1))
 
         # Get data from sensors
-        self.add_behaviour(GetCars(period=config.GET_CARS_FREQ))
+        #self.add_behaviour(GetCars(period=config.GET_CARS_FREQ))
 
         # Control lights
-        self.add_behaviour(ChangeLights(config.CHANGE_LIGHTS_FREQ))
+        #self.add_behaviour(ChangeLights(config.CHANGE_LIGHTS_FREQ))
 
         # Answering protocol
         self.add_behaviour(CrossroadsMessanger.NegotiatingProtocolParticipant())
+        self.add_behaviour(CrossroadsMessanger.NegotiatingProtocolInitiator())
