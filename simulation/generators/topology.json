@@ -1,8 +1,6 @@
 {
     "B1@jabbim.pl": {
         "neighbours": {
-            "A1B1_0": "A1@jabbim.pl",
-            "B0B1_0": "B0@jabbim.pl",
             "B2B1_0": "B2@jabbim.pl",
             "C1B1_0": "C1@jabbim.pl"
         },
@@ -25,7 +23,6 @@
     },
     "B2@jabbim.pl": {
         "neighbours": {
-            "A2B2_0": "A2@jabbim.pl",
             "B1B2_0": "B1@jabbim.pl",
             "B3B2_0": "B3@jabbim.pl",
             "C2B2_0": "C2@jabbim.pl"
@@ -49,9 +46,7 @@
     },
     "B3@jabbim.pl": {
         "neighbours": {
-            "A3B3_0": "A3@jabbim.pl",
             "B2B3_0": "B2@jabbim.pl",
-            "B4B3_0": "B4@jabbim.pl",
             "C3B3_0": "C3@jabbim.pl"
         },
         "roads": {
@@ -74,7 +69,6 @@
     "C1@jabbim.pl": {
         "neighbours": {
             "B1C1_0": "B1@jabbim.pl",
-            "C0C1_0": "C0@jabbim.pl",
             "C2C1_0": "C2@jabbim.pl",
             "D1C1_0": "D1@jabbim.pl"
         },
@@ -123,7 +117,6 @@
         "neighbours": {
             "B3C3_0": "B3@jabbim.pl",
             "C2C3_0": "C2@jabbim.pl",
-            "C4C3_0": "C4@jabbim.pl",
             "D3C3_0": "D3@jabbim.pl"
         },
         "roads": {
@@ -146,9 +139,7 @@
     "D1@jabbim.pl": {
         "neighbours": {
             "C1D1_0": "C1@jabbim.pl",
-            "D0D1_0": "D0@jabbim.pl",
-            "D2D1_0": "D2@jabbim.pl",
-            "E1D1_0": "E1@jabbim.pl"
+            "D2D1_0": "D2@jabbim.pl"
         },
         "roads": {
             "horizontal": {
@@ -171,8 +162,7 @@
         "neighbours": {
             "C2D2_0": "C2@jabbim.pl",
             "D1D2_0": "D1@jabbim.pl",
-            "D3D2_0": "D3@jabbim.pl",
-            "E2D2_0": "E2@jabbim.pl"
+            "D3D2_0": "D3@jabbim.pl"
         },
         "roads": {
             "horizontal": {
@@ -194,9 +184,7 @@
     "D3@jabbim.pl": {
         "neighbours": {
             "C3D3_0": "C3@jabbim.pl",
-            "D2D3_0": "D2@jabbim.pl",
-            "D4D3_0": "D4@jabbim.pl",
-            "E3D3_0": "E3@jabbim.pl"
+            "D2D3_0": "D2@jabbim.pl"
         },
         "roads": {
             "horizontal": {

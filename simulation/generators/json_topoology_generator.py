@@ -12,19 +12,24 @@ def generate_topology():
 
     topology_entries = {}
 
+    traffic_light_junctions_ids = [child.get('id') for child in root if is_traffic_light_junction(child)]
     for child in root:
-        if child.tag == 'junction' and child.attrib.get('type') == 'traffic_light':
-            entry_id, entry_data = create_topology_entry(child)
+        if is_traffic_light_junction(child):
+            entry_id, entry_data = create_topology_entry(child, traffic_light_junctions_ids)
             topology_entries[entry_id] = entry_data
     with open('topology.json', 'w') as outfile:
         json.dump(topology_entries, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
 
-def create_topology_entry(junction_element):
+def is_traffic_light_junction(child):
+    return child.tag == 'junction' and child.attrib.get('type') == 'traffic_light'
+
+
+def create_topology_entry(junction_element, traffic_light_junctions_ids):
     entry_id = junction_element.get('id') + '@jabbim.pl'
     lanes = junction_element.attrib.get('incLanes').split()
     roads = create_roads_entry(lanes)
-    neighbours = create_neighbours_entry(lanes)
+    neighbours = create_neighbours_entry(lanes, traffic_light_junctions_ids)
     entry_data = {'roads': roads, 'neighbours': neighbours}
     return entry_id, entry_data
 
@@ -36,11 +41,16 @@ def create_roads_entry(lanes):
     return roads
 
 
-def create_neighbours_entry(lanes):
+def create_neighbours_entry(lanes, traffic_light_junctions_ids):
     neighbours = {}
     for lane in lanes:
-        neighbours[lane] = lane[0:2] + '@jabbim.pl'
+        if is_lane_to_traffic_ligth_juntion(lane, traffic_light_junctions_ids):
+            neighbours[lane] = lane[0:2] + '@jabbim.pl'
     return neighbours
+
+
+def is_lane_to_traffic_ligth_juntion(lane, traffic_light_junctions_ids):
+    return lane[0:2] in traffic_light_junctions_ids
 
 
 if __name__ == "__main__":
