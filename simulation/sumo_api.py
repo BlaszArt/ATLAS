@@ -3,18 +3,21 @@ import re
 
 from enum import Enum
 
-from exceptions import lane_control_exception as lce
-from enums import traffic_ligth_colors as tlc
+from .exceptions import lane_control_exception as lce
+from .enums import traffic_ligth_colors as tlc
+import traci
 
 
 class SumoApi:
     def __init__(self):
         pattern = re.compile('[A-Z][0-9][A-Z][0-9]_0')
-        self.lanes = [lane for lane in traci.lane.getIDList() if pattern.match(lane)]
+        self.simulation = traci.getConnection("simulation")
+        self.lanes = [lane for lane in self.simulation.lane.getIDList() if pattern.match(lane)]
         self.vehicles_on_lanes_dict = {lane: 0 for lane in self.lanes}
 
+
     def change_light_duration(self, agent_jid, remain_seconds):
-        traci.trafficlight.setPhaseDuration(agent_jid, remain_seconds)
+        self.simulation.trafficlight.setPhaseDuration(agent_jid, remain_seconds)
 
     def get_cars_on_lane(self, lane_id):
         return self.vehicles_on_lanes_dict[lane_id]
@@ -26,13 +29,13 @@ class SumoApi:
             raise lce.LaneControlException('Lane not controlled by that traffic light')
         controlled_lanes = self._get_lanes_controlled_by_trafficligth(agent_jid)
         segregated_lanes = self._segregate_lanes_clockwise_by_names(controlled_lanes, agent_jid)
-        red_yellow_green_state = traci.trafficlight.getRedYellowGreenState(agent_jid)
+        red_yellow_green_state = self.simulation.trafficlight.getRedYellowGreenState(agent_jid)
         lane_pos_in_segregated = segregated_lanes.index(lane_id)
         return tlc.TrafficLightColors.get_light_color(
             red_yellow_green_state[4 * lane_pos_in_segregated: 4 * (lane_pos_in_segregated + 1)])
 
     def simulation_step(self):
-        traci.simulationStep()
+        self.simulation.simulationStep()
         self._refresh_vehicles_number_on_lanes()
 
     def _refresh_vehicles_number_on_lanes(self):
@@ -41,8 +44,8 @@ class SumoApi:
                                                        lane_id] + self._get_lane_vehicles_change(lane_id)
 
     def _get_lane_vehicles_change(self, lane_id):
-        vehicles_at_start_of_lane = traci.inductionloop.getVehicleData(lane_id + 'a')
-        vehicles_at_end_of_lane = traci.inductionloop.getVehicleData(lane_id + 'b')
+        vehicles_at_start_of_lane = self.simulation.inductionloop.getVehicleData(lane_id + 'a')
+        vehicles_at_end_of_lane = self.simulation.inductionloop.getVehicleData(lane_id + 'b')
         vehicles_arrived = sum([vehicle[3] != -1 for vehicle in vehicles_at_start_of_lane])
         vehicles_left = sum([vehicle[3] != -1 for vehicle in vehicles_at_end_of_lane])
         return vehicles_arrived - vehicles_left
