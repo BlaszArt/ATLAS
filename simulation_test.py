@@ -8,7 +8,7 @@ import sys
 import traci
 from sumolib import checkBinary
 
-from sumo_api import SumoApi
+from simulation.sumo_api import SumoApi
 
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -50,5 +50,5 @@ if __name__ == "__main__":
     else:
         sumoBinary = checkBinary('sumo-gui')
 
-    traci.start([sumoBinary, "-c", "configuration/simulation.sumo.cfg"])
+    traci.start([sumoBinary, "-c", "configuration/simulation.sumo.cfg"], label="simulation")
     run()
