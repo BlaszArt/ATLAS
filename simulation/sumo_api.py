@@ -20,9 +20,11 @@ class SumoApi:
         self.simulation.trafficlight.setPhaseDuration(agent_jid, new_remaining)
 
     def get_cars_on_lane(self, lane_id):
+        self._refresh_vehicles_number_on_lanes()
         return self.vehicles_on_lanes_dict[lane_id]
 
     def get_light_on_lane(self, agent_jid, lane_id):
+        self._refresh_vehicles_number_on_lanes()
         if lane_id not in self.lanes:
             raise lce.LaneControlException('Lane with that id does not exist')
         if not self._is_lane_controlled_by_selected_trafficlight(lane_id, agent_jid):
