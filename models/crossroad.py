@@ -21,12 +21,10 @@ class Crossroad:
                 max_cars = self.cars[street]
         return max_cars
 
-    def get_actual_green_lights_direction(self):
-        # if next(iter(self.lights['vertical'].values())) == 1:
-        #     return 'vertical'
-        # else:
-        #     return 'horizontal'
+    def got_i_lights(self):
+            return bool(self.lights)
 
+    def get_actual_green_lights_direction(self):
         for lane, light in self.lights['vertical'].items():
             if light == 1:
                 return 'vertical'

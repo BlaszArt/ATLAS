@@ -11,8 +11,8 @@
 #    |        |
 #    S        S
 
-import os
-os.environ['PYTHONASYNCIODEBUG'] = '1'
+#import os
+#os.environ['PYTHONASYNCIODEBUG'] = '1'
 
 from agents.crossroad_agent import CrossroadAgent
 from agents.manager_agent import ManagerAgent

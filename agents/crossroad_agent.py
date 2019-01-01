@@ -23,7 +23,7 @@ class CrossroadAgent(Agent, Crossroad):
                     # if we wanna last green longer (false) or change it quicker (true)
                     messages_body_labels.change_by: None}  # how much we wanna change lights remaining duration
         self.cars_speed = cars_speed
-        self.directions_max_cars = {'vertical': None, 'horizontal': None}  # directions and max cars on their streets
+        self.directions_max_cars = {'vertical': 0, 'horizontal': 0}  # directions and max cars on their streets
 
     def __str__(self):
         return "Agent: {}".format(self.jid)
@@ -55,5 +55,5 @@ class CrossroadAgent(Agent, Crossroad):
         #self.add_behaviour(ChangeLights(config.CHANGE_LIGHTS_FREQ))
 
         # Answering protocol
-        #self.add_behaviour(CrossroadsMessanger.NegotiatingProtocolParticipant())
+        self.add_behaviour(CrossroadsMessanger.NegotiatingProtocolParticipant())
         self.add_behaviour(CrossroadsMessanger.NegotiatingProtocolInitiator())
