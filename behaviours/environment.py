@@ -60,7 +60,9 @@ class GetCars(PeriodicBehaviour):
     async def run(self):
 
         for road, streets in self.agent.roads.items():
-            self.simulator(road, streets['streets'])
+            for street in streets['streets']:
+                self.agent.cars[street] = self.agent.sumo_api.get_cars_on_lane(street)
+            #self.simulator(road, streets['streets'])
 
     def simulator(self, road, streets):
         for street in streets:
@@ -72,3 +74,14 @@ class GetCars(PeriodicBehaviour):
                 # if Directions.get_opposite_dir_name(road) in self.agent.neighbours:
                 #     self.agent.neighbours[Directions.get_opposite_dir_name(road)].cars[
                 #         street] += self.agent.cars_speed
+
+
+class GetLightsStatus(PeriodicBehaviour):
+    """
+    Crossroad behaviour for getting data about lights on streets
+    """
+
+    async def run(self):
+        for road, lights in self.agent.lights.items():
+            for lane in lights:
+                self.agent.lights[road][lane] = self.agent.sumo_api.get_light_on_lane(str(self.agent.jid), lane)

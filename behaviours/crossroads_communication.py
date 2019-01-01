@@ -108,9 +108,15 @@ class CrossroadsMessanger:
             async def send_decisions_about_proposals(self, proposals):
                 for neighbour_jid, proposal in proposals.items():
                     if self.is_accepted_proposal_sender(neighbour_jid):
-                        # TODO: POSLAC INFORMACJE DO SUDO O ZMIANIE CZASU TRWANIA KONKRETNYCH SWIATEL - JAKIES setPhaseDuration czy cos z API
                         # kierunek nastaw zna (self.cfp[messages_body_labels.direction]), ale czas na wydluzenie/skrocenie przychodzi z proposalem
                         # jesli direction z cfp jest inny niz aktualny kierunek zielonego to odjac czas od pozostalego do zmiany swiatla
+                        proposal_body = json.loads(proposal.body)
+                        change_by = proposal_body[messages_body_labels.change_by]
+                        if self.cfp[messages_body_labels.direction] == self.agent.get_actual_green_lights_direction():
+                            self.agent.sumo_api.change_light_duration(str(self.agent.jid), change_by)
+                        else:
+                            self.agent.sumo_api.change_light_duration(str(self.agent.jid), -change_by)
+
                         await self.send(CrossroadsMessages.build_cfp_accept_proposal(proposal))
                     else:
                         await self.send(CrossroadsMessages.build_cfp_rejected_proposal(proposal))

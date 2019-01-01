@@ -1,10 +1,11 @@
 from spade.agent import Agent
 from spade.template import Template
-from behaviours.environment import GetCars, ChangeLights
+from behaviours.environment import GetCars, ChangeLights, GetLightsStatus
 from behaviours.topology import UpdateTopology
 from models import messages_body_labels
 from models.crossroad import Crossroad
 from behaviours.crossroads_communication import CrossroadsMessanger
+from simulation.sumo_api import SumoApi
 import config
 from behaviours.reporting import SendReportForSubscribers, Subscribe
 
@@ -13,6 +14,7 @@ class CrossroadAgent(Agent, Crossroad):
     def __init__(self, manager_jid, neighbours, cars_speed, *args, **kwargs):
         Agent.__init__(self, *args, **kwargs)
         Crossroad.__init__(self)
+        self.sumo_api = SumoApi()
         self.manager_jid = manager_jid
         self.subscribers = []
         self.neighbours = neighbours
@@ -49,7 +51,8 @@ class CrossroadAgent(Agent, Crossroad):
         self.add_behaviour(SendReportForSubscribers(period=1))
 
         # Get data from sensors
-        #self.add_behaviour(GetCars(period=config.GET_CARS_FREQ))
+        self.add_behaviour(GetCars(period=config.GET_DATA_FREQ))
+        self.add_behaviour(GetLightsStatus(period=config.GET_DATA_FREQ))
 
         # Control lights
         #self.add_behaviour(ChangeLights(config.CHANGE_LIGHTS_FREQ))
