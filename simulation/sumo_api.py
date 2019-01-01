@@ -15,6 +15,8 @@ class SumoApi:
         self.lanes = [lane for lane in self.simulation.lane.getIDList() if pattern.match(lane)]
         self.vehicles_on_lanes_dict = {lane: 0 for lane in self.lanes}
 
+    def get_light_duration(self, agent_jid):
+        self.simulation.trafficlight.getPhaseDuration(agent_jid)
 
     def change_light_duration(self, agent_jid, remain_seconds):
         self.simulation.trafficlight.setPhaseDuration(agent_jid, remain_seconds)
