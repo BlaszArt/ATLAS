@@ -60,7 +60,7 @@ class SumoApi:
     def _segregate_lanes_clockwise_by_names(self, lanes, trafficlight_id):
         segregated_list = [self._get_north_lane(lanes, trafficlight_id), self._get_east_lane(lanes, trafficlight_id),
                            self._get_south_lane(lanes, trafficlight_id), self._get_west_lane(lanes, trafficlight_id)]
-        segregated_list = filter(lambda lane_id: lane_id is not None, segregated_list)
+        segregated_list = [lane_id for lane_id in segregated_list if lane_id is not None]
         return segregated_list
 
     def _get_north_lane(self, lanes, trafficlight_id):
