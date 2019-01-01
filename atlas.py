@@ -57,4 +57,5 @@ if __name__ == '__main__':
             for agent in agents:
                 agent.stop()
             ma1.stop()
+            sim.stop()
             break
