@@ -11,16 +11,25 @@
 #    |        |
 #    S        S
 
-#import os
+import os, sys
 #os.environ['PYTHONASYNCIODEBUG'] = '1'
 
 from agents.crossroad_agent import CrossroadAgent
 from agents.manager_agent import ManagerAgent
+from agents.simulator_agent import SimulationAgent
 import time
 from web.web import Web
 from utils.agents_generator import AgentsGenerator
 
 if __name__ == '__main__':
+    if 'SUMO_HOME' in os.environ:
+        tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
+        sys.path.append(tools)
+    else:
+        sys.exit("please declare environment variable 'SUMO_HOME'")
+    sim = SimulationAgent("sim@jabbim.pl", "simulator")
+    sim.start()
+
     # ca1 = CrossroadAgent(jid="ca1@jabbim.pl", password="crossroad1", manager_jid="ma1@jabbim.pl", cars_speed=2)
     # ca2 = CrossroadAgent(jid="ca2@jabbim.pl", password="crossroad2", manager_jid="ma1@jabbim.pl", cars_speed=1)
     # ca3 = CrossroadAgent(jid="ca3@jabbim.pl", password="crossroad3", manager_jid="ma1@jabbim.pl", cars_speed=2)
