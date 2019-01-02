@@ -35,7 +35,7 @@ class ChangeLights(PeriodicBehaviour):
         #for street in self.agent.lights:
         #    self.agent.lights[street] = 1 if street in lights_to_change else 0
 
-    #todo: powinna zwrocic zestaw: kierunek: najwieksza liczba samochodow, a zwraca te sama, niekiedy zrypana wartosc w obu kierunkach
+    # todo: powinna zwrocic zestaw: kierunek: najwieksza liczba samochodow, a zwraca te sama, niekiedy zrypana wartosc w obu kierunkach
     # np. dla samochodow na ulicach: N=5, S=3, E=1, W=10 powinno zwrocic: NS: 5, EW: 10
     def get_roads_with_max_cars(self):
         return {road: self.return_max_cars_on_road(data['streets']) for road, data in self.agent.roads.items()}
@@ -62,7 +62,8 @@ class GetCars(PeriodicBehaviour):
         for road, streets in self.agent.roads.items():
             for street in streets['streets']:
                 self.agent.cars[street] = self.agent.sumo_api.get_cars_on_lane(street)
-            #self.simulator(road, streets['streets'])
+                # print(street + ':' + str(self.agent.cars[street]))
+                # self.simulator(road, streets['streets'])
 
     def simulator(self, road, streets):
         for street in streets:

@@ -24,22 +24,22 @@ class SumoApi(metaclass=Singleton):
         self.vehicles_on_lanes_dict = {lane: 0 for lane in self.lanes}
 
     def change_light_duration(self, agent_jid, change_by):
-        new_remaining = change_by + self._get_phase_remaining_sec(agent_jid)
-        self.simulation.trafficlight.setPhaseDuration(agent_jid, new_remaining)
+        trafficlight_id = self._trafficlight_id_from_agent_jid(agent_jid)
+        new_remaining = change_by + self._get_phase_remaining_sec(trafficlight_id)
+        self.simulation.trafficlight.setPhaseDuration(trafficlight_id, new_remaining)
 
     def get_cars_on_lane(self, lane_id):
-        self._refresh_vehicles_number_on_lanes()
         return self.vehicles_on_lanes_dict[lane_id]
 
     def get_light_on_lane(self, agent_jid, lane_id):
-        self._refresh_vehicles_number_on_lanes()
+        trafficlight_id = self._trafficlight_id_from_agent_jid(agent_jid)
         if lane_id not in self.lanes:
-            raise lce.LaneControlException('Lane with that id does not exist')
-        if not self._is_lane_controlled_by_selected_trafficlight(lane_id, agent_jid):
-            raise lce.LaneControlException('Lane not controlled by that traffic light')
-        controlled_lanes = self._get_lanes_controlled_by_trafficligth(agent_jid)
-        segregated_lanes = self._segregate_lanes_clockwise_by_names(controlled_lanes, agent_jid)
-        red_yellow_green_state = self.simulation.trafficlight.getRedYellowGreenState(agent_jid)
+            raise lce.LaneControlException('Lane with id {} does not exist'.format(lane_id))
+        if not self._is_lane_controlled_by_selected_trafficlight(lane_id, trafficlight_id):
+            raise lce.LaneControlException('Lane with id {} not controlled traffic light with id {}'.format(lane_id, trafficlight_id))
+        controlled_lanes = self._get_lanes_controlled_by_trafficligth(trafficlight_id)
+        segregated_lanes = self._segregate_lanes_clockwise_by_names(controlled_lanes, trafficlight_id)
+        red_yellow_green_state = self.simulation.trafficlight.getRedYellowGreenState(trafficlight_id)
         lane_pos_in_segregated = segregated_lanes.index(lane_id)
         return tlc.TrafficLightColors.get_light_color(
             red_yellow_green_state[4 * lane_pos_in_segregated: 4 * (lane_pos_in_segregated + 1)])
@@ -48,14 +48,14 @@ class SumoApi(metaclass=Singleton):
         self.simulation.simulationStep()
         self._refresh_vehicles_number_on_lanes()
 
-    def _get_phase_next_switch(self, agent_jid):
-        return self.simulation.trafficlight.getNextSwitch(agent_jid)
-
-    def _get_phase_remaining_sec(self, agent_jid):
-        return self._get_phase_next_switch(agent_jid) - self._get_simulation_time()
-
-    def _get_simulation_time(self):
+    def get_simulation_time(self):
         return self.simulation.simulation.getTime()
+
+    def _get_phase_next_switch(self, trafficlight_id):
+        return self.simulation.trafficlight.getNextSwitch(trafficlight_id)
+
+    def _get_phase_remaining_sec(self, trafficlight_id):
+        return self._get_phase_next_switch(trafficlight_id) - self.get_simulation_time()
 
     def _refresh_vehicles_number_on_lanes(self):
         for lane_id in self.vehicles_on_lanes_dict.keys():
@@ -105,6 +105,9 @@ class SumoApi(metaclass=Singleton):
             if ord(lane[0]) == ord(trafficlight_id[0]) - 1 and int(lane[1]) == int(trafficlight_id[1]):
                 return lane
         return None
+
+    def _trafficlight_id_from_agent_jid(self, agent_jid):
+        return agent_jid[:2].upper()
 
 
 class Directions(Enum):

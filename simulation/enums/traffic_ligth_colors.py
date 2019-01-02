@@ -11,5 +11,5 @@ class TrafficLightColors(Enum):
         return SUMO_COLORS_ENCODED.get(color_sumo_representation)
 
 
-SUMO_COLORS_ENCODED = {"GGgg": TrafficLightColors.GREEN, "rrrr": TrafficLightColors.RED,
-                       "yyyy": TrafficLightColors.YELLOW}
+SUMO_COLORS_ENCODED = {"GGgg": 1, "rrrr": 0,
+                       "yyyy": 0}
