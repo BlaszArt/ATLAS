@@ -1,14 +1,22 @@
-import traci
 import re
-
 from enum import Enum
 
-from .exceptions import lane_control_exception as lce
-from .enums import traffic_ligth_colors as tlc
 import traci
 
+from .enums import traffic_ligth_colors as tlc
+from .exceptions import lane_control_exception as lce
 
-class SumoApi:
+
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class SumoApi(metaclass=Singleton):
     def __init__(self):
         pattern = re.compile('[A-Z][0-9][A-Z][0-9]_0')
         self.simulation = traci.getConnection("simulation")
