@@ -1,13 +1,14 @@
 from spade.agent import Agent
 from spade.template import Template
-from behaviours.environment import GetCars, ChangeLights, GetLightsStatus
+
+import config
+from behaviours.crossroads_communication import CrossroadsMessanger
+from behaviours.environment import GetCars, GetLightsStatus
+from behaviours.reporting import SendReportForSubscribers, Subscribe
 from behaviours.topology import UpdateTopology
 from models import messages_body_labels
 from models.crossroad import Crossroad
-from behaviours.crossroads_communication import CrossroadsMessanger
 from simulation.sumo_api import SumoApi
-import config
-from behaviours.reporting import SendReportForSubscribers, Subscribe
 
 
 class CrossroadAgent(Agent, Crossroad):

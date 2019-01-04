@@ -1,7 +1,6 @@
 from spade.behaviour import PeriodicBehaviour
 
 from behaviours.crossroads_communication import CrossroadsMessanger
-from models.directions import Directions
 
 
 class ChangeLights(PeriodicBehaviour):
@@ -31,9 +30,9 @@ class ChangeLights(PeriodicBehaviour):
                 self.agent.lights[road] = 1
             self.agent.lights[road] = 0
 
-        #lights_to_change = self.agent.roads[max_busy_road]['streets']
-        #for street in self.agent.lights:
-        #    self.agent.lights[street] = 1 if street in lights_to_change else 0
+            # lights_to_change = self.agent.roads[max_busy_road]['streets']
+            # for street in self.agent.lights:
+            #    self.agent.lights[street] = 1 if street in lights_to_change else 0
 
     # todo: powinna zwrocic zestaw: kierunek: najwieksza liczba samochodow, a zwraca te sama, niekiedy zrypana wartosc w obu kierunkach
     # np. dla samochodow na ulicach: N=5, S=3, E=1, W=10 powinno zwrocic: NS: 5, EW: 10
@@ -85,4 +84,7 @@ class GetLightsStatus(PeriodicBehaviour):
     async def run(self):
         for road, lights in self.agent.lights.items():
             for lane in lights:
-                self.agent.lights[road][lane] = self.agent.sumo_api.get_light_on_lane(str(self.agent.jid), lane)
+                self.agent.lights[road][lane] = self.agent.sumo_api.get_light_on_lane(lane)
+                print('lane {} - light : {}'.format(lane, self.agent.lights[road][lane]))
+        # just for test change_light_duration method
+        self.agent.sumo_api.change_light_duration(str(self.agent.jid), -1)
