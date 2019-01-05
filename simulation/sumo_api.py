@@ -30,9 +30,11 @@ class SumoApi(metaclass=Singleton):
         self.vehicles_on_lanes_dict = {lane: 0 for lane in self.controlled_lanes}
         self.lanes_lights_dict = {}
         self.change_light_request_dict = {}
+        self.simulation_step_ = 0
 
     def simulation_step(self):
         self.simulation.simulationStep()
+        self._get_simulation_step()
         self._refresh_vehicles_number_on_lanes()
         self._refresh_lights_on_lanes()
         self._execute_light_changes_reguests()
@@ -71,7 +73,10 @@ class SumoApi(metaclass=Singleton):
                                                        lane_id] + self._get_lane_vehicles_change(lane_id)
 
     def get_simulation_time(self):
-        return self.simulation.simulation.getTime()
+        return self.simulation_step_
+
+    def _get_simulation_step(self):
+        self.simulation_step_ = self.simulation.simulation.getTime()
 
     def _segregate_lanes_clockwise_by_names(self, lanes, trafficlight_id):
         segregated_list = [self._get_north_lane(lanes, trafficlight_id), self._get_east_lane(lanes, trafficlight_id),
