@@ -1,4 +1,5 @@
 import json
+import datetime
 
 
 class Crossroad:
@@ -8,7 +9,7 @@ class Crossroad:
         self.roads = {}
 
     def get_status(self):
-        status = {"cars": self.cars, "lights": self.lights}
+        status = {"timestamp": str(datetime.datetime.now()), "cars": self.cars, "lights": self.lights}
         return json.dumps(status)
 
     def get_roads_with_max_cars(self):
