@@ -126,7 +126,7 @@ class SumoApi(metaclass=Singleton):
         lock.acquire()
         for agent_jid, change_by in self.change_light_request_dict.items():
             self._change_light_duration(agent_jid, change_by)
-            self.change_light_request_dict.pop(agent_jid)
+        self.change_light_request_dict = {}
         lock.release()
 
 
