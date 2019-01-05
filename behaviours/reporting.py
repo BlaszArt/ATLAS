@@ -9,9 +9,6 @@ class SendReportForSubscribers(PeriodicBehaviour):
     Crossroad behaviour for sending report to subscribers
     """
 
-    async def on_start(self):
-        await asyncio.sleep(10)
-
     async def run(self):
         # send report
         
@@ -34,6 +31,7 @@ class Subscribe(CyclicBehaviour):
         if msg and msg.sender not in self.agent.subscribers:
             self.agent.subscribers.append(msg.sender)
         await asyncio.sleep(1)
+
 
 class ReceiveReport(PeriodicBehaviour):
     """
