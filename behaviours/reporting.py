@@ -39,9 +39,11 @@ class ReceiveReport(PeriodicBehaviour):
     """
 
     async def run(self):
-        msg = await self.receive()
-        if msg:
-            self.agent.reports[msg.sender] = msg.body
+        msg = 1
+        while msg:
+            msg = await self.receive()
+            if msg:
+                self.agent.reports[msg.sender] = msg.body
 
 
 class ReportSituation(PeriodicBehaviour):
