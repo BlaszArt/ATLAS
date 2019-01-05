@@ -29,8 +29,7 @@ class Crossroad:
             return bool(self.lights)
 
     def get_actual_green_lights_direction(self):
-        for lane, light in self.lights['vertical'].items():
-            if light == 1:
-                return 'vertical'
-            else:
-                return 'horizontal'
+        for direction in self.lights:
+            for lane, light in self.lights[direction].items():
+                if light == 1:
+                    return direction
