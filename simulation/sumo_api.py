@@ -110,7 +110,7 @@ class SumoApi(metaclass=Singleton):
 
     def _change_light_duration(self, agent_jid, change_by):
         trafficlight_id = self._trafficlight_id_from_agent_jid(agent_jid)
-        new_remaining = change_by + self._get_phase_remaining_sec(trafficlight_id)
+        new_remaining = max(change_by + self._get_phase_remaining_sec(trafficlight_id), 1)
         self.simulation.trafficlight.setPhaseDuration(trafficlight_id, new_remaining)
 
     def _trafficlight_id_from_agent_jid(self, agent_jid):
