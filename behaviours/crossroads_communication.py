@@ -41,10 +41,8 @@ class CrossroadsMessanger:
                 while not self.agent.got_i_lights():
                     await asyncio.sleep(5)
                 await asyncio.sleep(1)
-                # @Todo: NASTAWIC SPRAWDZENIE CZY POTRZEBUJEMY ZMIANY SWIATEL - JESLI TAK IDZ DO SET WHAT TO DO, NIE CZEKAJ NA SYGNAL RAZ JESZCZE
                 # print("[{}] jestem w stanie SETDATA".format(self.agent.jid))
                 # collecting data for request of changing lights
-
                 if self.agent.return_max_cars() >= config.MIN_CARS_FOR_CFP:
                     print("[{}] wysyłam cfp".format(self.agent.jid))
                     AlgorithmFunctions.set_what_to_do_with_lights(self.agent)
@@ -122,9 +120,11 @@ class CrossroadsMessanger:
                         # jesli direction z cfp jest inny niz aktualny kierunek zielonego to odjac czas od pozostalego do zmiany swiatla
                         proposal_body = json.loads(proposal.body)
                         change_by = proposal_body[messages_body_labels.change_by]
-                        if self.cfp[messages_body_labels.direction] == self.agent.get_actual_green_lights_direction():
+                        if self.agent.cfp[messages_body_labels.direction] == self.agent.get_actual_green_lights_direction():
+                            print('[{}] Wydluzam czas o {}'.format(self.agent.jid, change_by))
                             self.agent.sumo_api.change_light_duration(str(self.agent.jid), change_by)
                         else:
+                            print('[{}] Skracam czas o {}'.format(self.agent.jid, change_by))
                             self.agent.sumo_api.change_light_duration(str(self.agent.jid), -change_by)
 
                         await self.send(CrossroadsMessages.build_cfp_accept_proposal(proposal))
