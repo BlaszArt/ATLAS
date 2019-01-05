@@ -49,7 +49,7 @@ class CrossroadAgent(Agent, Crossroad):
         self.add_behaviour(Subscribe(), template_msg)
 
         # Reporting to manager
-        self.add_behaviour(SendReportForSubscribers(period=1))
+        self.add_behaviour(SendReportForSubscribers(period=config.SEND_REPORT_FREQ))
 
         # Get data from sensors
         self.add_behaviour(GetCars(period=config.GET_DATA_FREQ))
