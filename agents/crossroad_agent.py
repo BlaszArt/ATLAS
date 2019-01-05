@@ -25,6 +25,9 @@ class CrossroadAgent(Agent, Crossroad):
                     messages_body_labels.to_change: None,
                     # if we wanna last green longer (false) or change it quicker (true)
                     messages_body_labels.change_by: None}  # how much we wanna change lights remaining duration
+        self.last_cfp_ts = 0
+        self.delay_before_next_cfp = 0
+
         self.cars_speed = cars_speed
         self.directions_max_cars = {'vertical': 0, 'horizontal': 0}  # directions and max cars on their streets
 

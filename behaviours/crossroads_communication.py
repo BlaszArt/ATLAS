@@ -43,12 +43,15 @@ class CrossroadsMessanger:
                 await asyncio.sleep(1)
                 # print("[{}] jestem w stanie SETDATA".format(self.agent.jid))
                 # collecting data for request of changing lights
-                if self.agent.return_max_cars() >= config.MIN_CARS_FOR_CFP:
+                if self.can_i_send_cfp():
                     print("[{}] wysyłam cfp".format(self.agent.jid))
                     AlgorithmFunctions.set_what_to_do_with_lights(self.agent)
                     self.set_next_state(CrossroadsMessanger.SEND_CFP)
                 else:
                     self.set_next_state(CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED)
+
+            def can_i_send_cfp(self):
+                return self.agent.last_cfp_ts + self.agent.delay_before_next_cfp < self.agent.sumo_api.get_simulation_time() and self.agent.return_max_cars() >= config.MIN_CARS_FOR_CFP
 
         class SendCFP(State):
             async def run(self):
@@ -126,6 +129,9 @@ class CrossroadsMessanger:
                         else:
                             print('[{}] Skracam czas o {}'.format(self.agent.jid, change_by))
                             self.agent.sumo_api.change_light_duration(str(self.agent.jid), -change_by)
+
+                        self.agent.last_cfp_ts = self.agent.sumo_api.get_simulation_time()
+                        self.agent.delay_before_next_cfp = change_by
 
                         await self.send(CrossroadsMessages.build_cfp_accept_proposal(proposal))
                     else:
