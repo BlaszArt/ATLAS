@@ -82,7 +82,7 @@ class CrossroadsMessanger:
                 self.set_sender_of_best_proposal(proposals)
 
                 await self.send_decisions_about_proposals(proposals)
-
+                self.neigh_send_proposal_cnt = 0
                 self.set_next_state(CrossroadsMessanger.WAITING_FOR_INFORMS)
 
             def not_all_neighoburs_send_proposals(self):
