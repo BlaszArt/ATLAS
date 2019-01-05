@@ -6,12 +6,15 @@ from behaviours.functions import AlgorithmFunctions
 from models import messages_body_labels
 from models.messages import CrossroadsMessages
 import asyncio
+import config
+
 
 class CrossroadsMessanger:
     WAITING_FOR_CHANGE_LIGHTS_NEED = "WAITING_FOR_CHANGE_LIGHTS_NEED"
     SEND_CFP = "SEND_CFP"
     WAITING_FOR_PROPOSALS = "WAITING_FOR_PROPOSALS"
     WAITING_FOR_INFORMS = "WAITING_FOR_INFORMS"
+    A_LOT_OF_CARS = 5
 
     # FIPA CONTRACT NET INTERACTION PROTOCOL... almost
     class NegotiatingProtocolInitiator(FSMBehaviour):
@@ -22,6 +25,8 @@ class CrossroadsMessanger:
             self.add_state(name=CrossroadsMessanger.SEND_CFP, state=self.SendCFP())
             self.add_state(name=CrossroadsMessanger.WAITING_FOR_PROPOSALS, state=self.WaitingForProposals())
             self.add_state(name=CrossroadsMessanger.WAITING_FOR_INFORMS, state=self.WaitingForInforms())
+            self.add_transition(source=CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED,
+                                dest=CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED)
             self.add_transition(source=CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED,
                                 dest=CrossroadsMessanger.SEND_CFP)
             self.add_transition(source=CrossroadsMessanger.SEND_CFP, dest=CrossroadsMessanger.WAITING_FOR_PROPOSALS)
@@ -35,12 +40,17 @@ class CrossroadsMessanger:
                 # Security of not making any action on starting the environment.
                 while not self.agent.got_i_lights():
                     await asyncio.sleep(5)
-                await asyncio.sleep(5)
+                await asyncio.sleep(1)
                 # @Todo: NASTAWIC SPRAWDZENIE CZY POTRZEBUJEMY ZMIANY SWIATEL - JESLI TAK IDZ DO SET WHAT TO DO, NIE CZEKAJ NA SYGNAL RAZ JESZCZE
                 # print("[{}] jestem w stanie SETDATA".format(self.agent.jid))
                 # collecting data for request of changing lights
-                AlgorithmFunctions.set_what_to_do_with_lights(self.agent)
-                self.set_next_state(CrossroadsMessanger.SEND_CFP)
+
+                if self.agent.return_max_cars() >= config.MIN_CARS_FOR_CFP:
+                    print("[{}] wysyłam cfp".format(self.agent.jid))
+                    AlgorithmFunctions.set_what_to_do_with_lights(self.agent)
+                    self.set_next_state(CrossroadsMessanger.SEND_CFP)
+                else:
+                    self.set_next_state(CrossroadsMessanger.WAITING_FOR_CHANGE_LIGHTS_NEED)
 
         class SendCFP(State):
             async def run(self):
@@ -82,7 +92,7 @@ class CrossroadsMessanger:
 
             def if_proposal_add_to_proposals(self, msg, proposals):
                 if self.it_is_proposal_for_me(msg):
-                    # print('[{}] got PROPOSAL FROM {}: {}'.format(self.agent.jid, msg.sender, msg))
+                    print('[{}] got PROPOSAL FROM {}: {}'.format(self.agent.jid, msg.sender, msg))
                     # msg.sender is fucked up, so its easier to get sender jid via formating it to string than from dict
                     proposals["{}".format(msg.sender)] = msg
                     self.neigh_send_proposal_cnt += 1
@@ -102,7 +112,7 @@ class CrossroadsMessanger:
                     if proposal_body[messages_body_labels.can_you]:
                         if max_change_for < proposal_body[messages_body_labels.change_by]:
                             best_proposal_jid = neighbour_jid
-
+                print(f"[{self.agent.jid}] BEST PROPOSAL from {best_proposal_jid}")
                 self.acc_proposal_jid = best_proposal_jid
 
             async def send_decisions_about_proposals(self, proposals):

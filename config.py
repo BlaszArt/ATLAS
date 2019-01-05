@@ -6,5 +6,6 @@ SEND_REPORT_FREQ = 1
 RECEIVE_REPORT_FREQ = 1
 PRINT_REPORT_FREQ = 1
 UPDATE_TOPOLOGY_FREQ = 1
+MIN_CARS_FOR_CFP = 5
 
 ROOT_DIR_PATH = os.path.dirname(os.path.abspath(__file__))

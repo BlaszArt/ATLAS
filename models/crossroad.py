@@ -15,6 +15,9 @@ class Crossroad:
     def get_roads_with_max_cars(self):
         return {road: self.return_max_cars_on_road(data['streets']) for road, data in self.roads.items()}
 
+    def return_max_cars(self):
+        return max(self.cars.values())
+
     def return_max_cars_on_road(self, streets):
         max_cars = 0
         for street in streets:
