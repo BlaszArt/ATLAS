@@ -1,5 +1,5 @@
 {
-    "B1@jabbim.pl": {
+    "B1@jabb.im": {
         "neighbours": {
             "B2B1_0": "B2@jabbim.pl",
             "C1B1_0": "C1@jabbim.pl"
@@ -21,7 +21,7 @@
             }
         }
     },
-    "B2@jabbim.pl": {
+    "B2@jabb.im": {
         "neighbours": {
             "B1B2_0": "B1@jabbim.pl",
             "B3B2_0": "B3@jabbim.pl",
@@ -44,7 +44,7 @@
             }
         }
     },
-    "B3@jabbim.pl": {
+    "B3@jabb.im": {
         "neighbours": {
             "B2B3_0": "B2@jabbim.pl",
             "C3B3_0": "C3@jabbim.pl"
@@ -66,7 +66,7 @@
             }
         }
     },
-    "C1@jabbim.pl": {
+    "C1@jabb.im": {
         "neighbours": {
             "B1C1_0": "B1@jabbim.pl",
             "C2C1_0": "C2@jabbim.pl",
@@ -89,7 +89,7 @@
             }
         }
     },
-    "C2@jabbim.pl": {
+    "C2@jabb.im": {
         "neighbours": {
             "B2C2_0": "B2@jabbim.pl",
             "C1C2_0": "C1@jabbim.pl",
@@ -113,7 +113,7 @@
             }
         }
     },
-    "C3@jabbim.pl": {
+    "C3@jabb.im": {
         "neighbours": {
             "B3C3_0": "B3@jabbim.pl",
             "C2C3_0": "C2@jabbim.pl",
@@ -136,7 +136,7 @@
             }
         }
     },
-    "D1@jabbim.pl": {
+    "D1@jabb.im": {
         "neighbours": {
             "C1D1_0": "C1@jabbim.pl",
             "D2D1_0": "D2@jabbim.pl"
@@ -158,7 +158,7 @@
             }
         }
     },
-    "D2@jabbim.pl": {
+    "D2@jabb.im": {
         "neighbours": {
             "C2D2_0": "C2@jabbim.pl",
             "D1D2_0": "D1@jabbim.pl",
@@ -176,6 +176,28 @@
                 "streets": [
                     "D3D2_0",
                     "D1D2_0"
+                ],
+                "weight": 1
+            }
+        }
+    },
+    "D3@jabb.im": {
+        "neighbours": {
+            "C3D3_0": "C3@jabbim.pl",
+            "D2D3_0": "D2@jabbim.pl"
+        },
+        "roads": {
+            "horizontal": {
+                "streets": [
+                    "E3D3_0",
+                    "C3D3_0"
+                ],
+                "weight": 1
+            },
+            "vertical": {
+                "streets": [
+                    "D4D3_0",
+                    "D2D3_0"
                 ],
                 "weight": 1
             }

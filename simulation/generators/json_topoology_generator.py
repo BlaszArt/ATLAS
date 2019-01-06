@@ -26,7 +26,7 @@ def is_traffic_light_junction(child):
 
 
 def create_topology_entry(junction_element, traffic_light_junctions_ids):
-    entry_id = junction_element.get('id') + '@jabbim.pl'
+    entry_id = junction_element.get('id') + '@jabb.im'
     lanes = junction_element.attrib.get('incLanes').split()
     roads = create_roads_entry(lanes)
     neighbours = create_neighbours_entry(lanes, traffic_light_junctions_ids)
