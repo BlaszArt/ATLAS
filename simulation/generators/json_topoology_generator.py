@@ -45,7 +45,7 @@ def create_neighbours_entry(lanes, traffic_light_junctions_ids):
     neighbours = {}
     for lane in lanes:
         if is_lane_to_traffic_ligth_juntion(lane, traffic_light_junctions_ids):
-            neighbours[lane] = lane[0:2] + '@jabbim.pl'
+            neighbours[lane] = lane[0:2] + '@jabb.im'
     return neighbours
 
 
