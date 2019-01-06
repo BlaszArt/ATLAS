@@ -31,6 +31,9 @@ class SumoApi(metaclass=Singleton):
         self.lanes_lights_dict = {}
         self.change_light_request_dict = {}
         self.simulation_step_ = 0
+        with open('simulation.csv', 'w') as f:
+            f.write('STEP;' + ';'.join(self.vehicles_on_lanes_dict.keys()) + '\n')
+
 
     def simulation_step(self):
         self.simulation.simulationStep()
@@ -38,6 +41,10 @@ class SumoApi(metaclass=Singleton):
         self._refresh_vehicles_number_on_lanes()
         self._refresh_lights_on_lanes()
         self._execute_light_changes_reguests()
+        print(self.vehicles_on_lanes_dict)
+        with open('simulation.csv', 'a') as f:
+            f.write(str(int(self.simulation_step_)) + ';' + ';'.join([str(x) for x in self.vehicles_on_lanes_dict.values()]) + '\n')
+
 
     def get_cars_on_lane(self, lane_id):
         return self.vehicles_on_lanes_dict[lane_id]
