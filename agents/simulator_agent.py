@@ -3,6 +3,7 @@ from simulation.sumo_api import SumoApi
 from spade.behaviour import PeriodicBehaviour
 import traci
 
+from config import SIMULATION_STEP_FREQUENCY
 
 class SimulationAgent(Agent):
 
@@ -17,7 +18,9 @@ class SimulationAgent(Agent):
         async def run(self):
             self.sumo_api.simulation_step()
             print('{}{}'.format('simulation step: ', int(self.sumo_api.get_simulation_time())))
+            if self.sumo_api.get_cars_on_simulation() == 0:
+                self.sumo_api.generate_simulation_report()
 
     def setup(self):
         print(f"[{self.jid}] Hello World! I'm agent {self.jid}")
-        self.add_behaviour(self.RunSimulator(period=1))
+        self.add_behaviour(self.RunSimulator(period=SIMULATION_STEP_FREQUENCY))

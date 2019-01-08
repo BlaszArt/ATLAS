@@ -1,5 +1,7 @@
 from enum import Enum
 from threading import Lock
+from matplotlib import pyplot as plt
+from config import CROSSROAD_AGENTS_ON
 
 import traci
 
@@ -14,7 +16,9 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+
 lock = Lock()
+
 
 class SumoApi(metaclass=Singleton):
     SUMO_COLORS_ENCODED = {"GGgg": 1, "rrrr": 0,
@@ -31,9 +35,9 @@ class SumoApi(metaclass=Singleton):
         self.lanes_lights_dict = {}
         self.change_light_request_dict = {}
         self.simulation_step_ = 0
+        self.waiting_cars_in_time = []
         with open('simulation.csv', 'w') as f:
             f.write('STEP;' + ';'.join(self.vehicles_on_lanes_dict.keys()) + '\n')
-
 
     def simulation_step(self):
         self.simulation.simulationStep()
@@ -41,10 +45,11 @@ class SumoApi(metaclass=Singleton):
         self._refresh_vehicles_number_on_lanes()
         self._refresh_lights_on_lanes()
         self._execute_light_changes_reguests()
+        self._get_number_of_waiting_vehicles()
         print(self.vehicles_on_lanes_dict)
         with open('simulation.csv', 'a') as f:
-            f.write(str(int(self.simulation_step_)) + ';' + ';'.join([str(x) for x in self.vehicles_on_lanes_dict.values()]) + '\n')
-
+            f.write(str(int(self.simulation_step_)) + ';' + ';'.join(
+                [str(x) for x in self.vehicles_on_lanes_dict.values()]) + '\n')
 
     def get_cars_on_lane(self, lane_id):
         return self.vehicles_on_lanes_dict[lane_id]
@@ -140,6 +145,28 @@ class SumoApi(metaclass=Singleton):
             self._change_light_duration(agent_jid, change_by)
         self.change_light_request_dict = {}
         lock.release()
+
+    def generate_simulation_report(self):
+        print()
+        print("Summary time spent by vehicles waiting for green light: {}".format(sum(self.waiting_cars_in_time)))
+        print()
+        plt.plot(self.waiting_cars_in_time)
+        plt.xlabel("czas [s]")
+        plt.ylabel("liczba stojących samochodów")
+        if CROSSROAD_AGENTS_ON:
+            plt.title("Liczba stojących samochodów w czasie - z agentami")
+            plt.savefig("summary_with_agents.jpg")
+        else:
+            plt.title("Liczba stojących samochodów w czasie - bez agentów")
+            plt.savefig("summary_without_agents.jpg")
+
+    def _get_number_of_waiting_vehicles(self):
+        waiting_cars = len([vehicleId for vehicleId in self.simulation.vehicle.getIDList() if
+                            self.simulation.vehicle.getSpeed(vehicleId) == 0])
+        self.waiting_cars_in_time.append(waiting_cars)
+
+    def get_cars_on_simulation(self):
+        return self.simulation.vehicle.getIDCount()
 
 
 class Directions(Enum):

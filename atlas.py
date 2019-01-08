@@ -11,15 +11,15 @@
 #    |        |
 #    S        S
 
-import os, sys
-#os.environ['PYTHONASYNCIODEBUG'] = '1'
+import os
+import sys
+import time
 
-from agents.crossroad_agent import CrossroadAgent
+# os.environ['PYTHONASYNCIODEBUG'] = '1'
 from agents.manager_agent import ManagerAgent
 from agents.simulator_agent import SimulationAgent
-import time
-from web.web import Web
 from utils.agents_generator import AgentsGenerator
+from config import CROSSROAD_AGENTS_ON
 
 if __name__ == '__main__':
     if 'SUMO_HOME' in os.environ:
@@ -29,13 +29,15 @@ if __name__ == '__main__':
         sys.exit("please declare environment variable 'SUMO_HOME'")
     sim = SimulationAgent("sim@jabbim.pl", "simulator")
 
-    ma1 = ManagerAgent("ma1@jabbim.pl", "manageragent1", topology='simulation/generators/topology.json')
-    agents = AgentsGenerator.generate_agents('simulation/generators/topology.json', 'ma1@jabbim.pl')
-    AgentsGenerator.start_agents(agents)
+    if CROSSROAD_AGENTS_ON:
+        ma1 = ManagerAgent("ma1@jabbim.pl", "manageragent1", topology='simulation/generators/topology.json')
+        agents = AgentsGenerator.generate_agents('simulation/generators/topology.json', 'ma1@jabbim.pl')
+        AgentsGenerator.start_agents(agents)
 
     sim.start()
-    ma1.start()
 
+    if CROSSROAD_AGENTS_ON:
+         ma1.start()
 
     print("Wait until user interrupts with ctrl+C")
     while True:
@@ -44,6 +46,7 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             for agent in agents:
                 agent.stop()
-            ma1.stop()
             sim.stop()
+            ma1.stop()
+
             break

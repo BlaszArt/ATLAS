@@ -86,5 +86,4 @@ class GetLightsStatus(PeriodicBehaviour):
             for lane in lights:
                 self.agent.lights[road][lane] = self.agent.sumo_api.get_light_on_lane(lane)
                 #print('lane {} - light : {}'.format(lane, self.agent.lights[road][lane]))
-        # just for test change_light_duration method
-        # self.agent.sumo_api.change_light_duration(str(self.agent.jid), -1)
+
