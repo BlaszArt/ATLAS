@@ -1,11 +1,14 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import optparse
 import os
 import sys
-import optparse
+
 import traci
 from sumolib import checkBinary
+
+from simulation.sumo_api import SumoApi
 
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -13,28 +16,20 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("please declare environment variable 'SUMO_HOME'")
 
-
-def get_lane_traffic(lane_name):
-    res_a = traci.inductionloop.getLastStepVehicleNumber(lane_name + 'a')
-    res_b = traci.inductionloop.getLastStepVehicleNumber(lane_name + 'b')
-    return res_a - res_b
-
-
 def run():
     """execute the TraCI control loop"""
+    sumo_api = SumoApi()
     step = 0
-    balance = 0
     while traci.simulation.getMinExpectedNumber() > 0:
-        traci.simulationStep()
+        sumo_api.simulation_step()
         step += 1
+        print(step)
+        print('C2C3_0 : ' + str(sumo_api.vehicles_on_lanes_dict['C2C3_0']))
+        print(sumo_api.get_light_on_lane('C2', 'C3C2_0'))
 
-        res = get_lane_traffic('A3A2_0')
-        if res != 0:
-            balance += res
-            print('\nSimilation step %d' % step)
-            print('A3A2_0 vehicles change: %d' % res)
-            print('Balance: %d' % balance)
-            sys.stdout.flush()
+
+        if step == 6:
+            sumo_api.change_light_duration('D3', 1)
 
     traci.close()
 
@@ -55,5 +50,5 @@ if __name__ == "__main__":
     else:
         sumoBinary = checkBinary('sumo-gui')
 
-    traci.start([sumoBinary, "-c", "configuration/simulation.sumo.cfg"])
+    traci.start([sumoBinary, "-c", "configuration/simulation.sumo.cfg"], label="simulation")
     run()

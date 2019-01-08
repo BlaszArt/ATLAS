@@ -3,43 +3,50 @@
 #
 #    N        N
 #    |        |
-#-W--1--E--W--2--E
+# -W--1--E--W--2--E
 #    |        |
 #    S        S
 #    |        |
-#-W--3--E--W--4--E
+# -W--3--E--W--4--E
 #    |        |
 #    S        S
 
-from agents.crossroad_agent import CrossroadAgent
-from agents.manager_agent import ManagerAgent
+import os
+import sys
 import time
-from web.web import Web
+
+# os.environ['PYTHONASYNCIODEBUG'] = '1'
+from agents.manager_agent import ManagerAgent
+from agents.simulator_agent import SimulationAgent
+from utils.agents_generator import AgentsGenerator
+from config import CROSSROAD_AGENTS_ON
 
 if __name__ == '__main__':
-    ca1 = CrossroadAgent(jid="ca1@jabbim.pl", password="crossroad1", manager_jid="ma1@jabbim.pl", cars_speed=2)
-    ca2 = CrossroadAgent(jid="ca2@jabbim.pl", password="crossroad2", manager_jid="ma1@jabbim.pl", cars_speed=1)
-    ca3 = CrossroadAgent(jid="ca3@jabbim.pl", password="crossroad3", manager_jid="ma1@jabbim.pl", cars_speed=2)
-    ca4 = CrossroadAgent(jid="ca4@jabbim.pl", password="crossroad4", manager_jid="ma1@jabbim.pl", cars_speed=1)
-    ma1 = ManagerAgent("ma1@jabbim.pl", "manageragent1", topology='examples/topology_example.json')
-    ca1.start_crossroad(neighbours={'S': ca4, 'W': ca1})
-    ca2.start_crossroad(neighbours={'S': ca4, 'W': ca1})
-    ca3.start_crossroad(neighbours={'N': ca1, 'E': ca4})
-    ca4.start_crossroad(neighbours={'N': ca2, 'W': ca3})
-    ma1.start()
+    if 'SUMO_HOME' in os.environ:
+        tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
+        sys.path.append(tools)
+    else:
+        sys.exit("please declare environment variable 'SUMO_HOME'")
+    sim = SimulationAgent("sim@jabbim.pl", "simulator")
 
-    time.sleep(5)
-    agents = [ca1, ca2, ca3, ca4, ma1]
-    Web.generate_web(agents, open_tab=True)
+    if CROSSROAD_AGENTS_ON:
+        ma1 = ManagerAgent("ma1@jabbim.pl", "manageragent1", topology='simulation/generators/topology.json')
+        agents = AgentsGenerator.generate_agents('simulation/generators/topology.json', 'ma1@jabbim.pl')
+        AgentsGenerator.start_agents(agents)
+
+    sim.start()
+
+    if CROSSROAD_AGENTS_ON:
+         ma1.start()
 
     print("Wait until user interrupts with ctrl+C")
     while True:
         try:
             time.sleep(1)
         except KeyboardInterrupt:
-            ca1.stop()
-            ca2.stop()
-            ca3.stop()
-            ca4.stop()
+            for agent in agents:
+                agent.stop()
+            sim.stop()
             ma1.stop()
+
             break

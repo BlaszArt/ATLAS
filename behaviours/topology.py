@@ -5,6 +5,7 @@ import os
 from spade.behaviour import PeriodicBehaviour, FSMBehaviour, State
 from spade.message import Message
 
+
 class UpdateTopology(PeriodicBehaviour):
     """
     Crossroad agent behaviour to update own topology based on manager status
@@ -15,12 +16,26 @@ class UpdateTopology(PeriodicBehaviour):
         if msg:
             print(f"[{self.agent.jid}] Got message with new topology")
             msg_dict = json.loads(msg.body)
-            self.agent.crossroad.roads = msg_dict['roads']
+            self.agent.roads = msg_dict['roads']
+
             self.agent.neighbours_jid = msg_dict['neighbours']
-            for street in msg_dict['streets']:
-                self.agent.crossroad.cars[street] = 0 if street not in self.agent.crossroad.cars else \
-                    self.agent.crossroad.cars[street]
-                self.agent.crossroad.lights[street] = 0
+            horizontal = {}
+            vertical = {}
+
+            for street in msg_dict['roads']['horizontal']['streets']:
+                self.agent.lights['horizontal'] = {}
+                self.agent.cars[street] = 0 if street not in self.agent.cars else \
+                    self.agent.cars[street]
+                horizontal[street] = 0
+
+            self.agent.lights['horizontal'].update(horizontal)
+
+            for street in msg_dict['roads']['vertical']['streets']:
+                self.agent.lights['vertical'] = {}
+                self.agent.cars[street] = 0 if street not in self.agent.cars else \
+                    self.agent.cars[street]
+                vertical[street] = 1
+            self.agent.lights['vertical'].update(vertical)
 
 
 class ManagingTopology(FSMBehaviour):
@@ -42,7 +57,8 @@ class ManagingTopology(FSMBehaviour):
                 return False
 
         async def run(self):
-            self.set_next_state("send_topology_and_subscribe") if self.has_stamp_changed() else self.set_next_state("check_topology")
+            self.set_next_state("send_topology_and_subscribe") if self.has_stamp_changed() else self.set_next_state(
+                "check_topology")
             await asyncio.sleep(1)
 
     class SendTopologyAndSubscribe(State):

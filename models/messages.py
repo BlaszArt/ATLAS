@@ -1,7 +1,8 @@
+import json
+
 from spade.message import Message
 
 from behaviours.functions import AlgorithmFunctions
-from models import messages_body_labels
 
 
 # FIPA CONTRACT NET INTERACTION PROTOCOL... almost all message types to be used
@@ -20,20 +21,20 @@ class CrossroadsMessages:
         msg.thread = str(agent_sender.jid)
         msg.set_metadata(CrossroadsMessages.PERFORMATIVE, CrossroadsMessages.CFP)
         # msg.body dont like dicts (but strings), so... every data needed set to metadata, cause it;s a dict...
-        msg.set_metadata(messages_body_labels.direction, agent_sender.cfp[messages_body_labels.direction])
-        msg.set_metadata(messages_body_labels.to_change, agent_sender.cfp[messages_body_labels.to_change])
-        msg.set_metadata(messages_body_labels.change_by, agent_sender.cfp[messages_body_labels.change_by])
-        # print("[{}] posylam do [{}] CFP".format(agent_sender.jid, msg.to))
+        msg.body = None
+        msg.body = json.dumps(agent_sender.cfp)
+
         return msg
 
     @staticmethod
     def build_cfp_propose(participant, received_cfp):
         msg = received_cfp.make_reply()
         msg.set_metadata(CrossroadsMessages.PERFORMATIVE,  CrossroadsMessages.PROPOSE)
-        participant_proposal = AlgorithmFunctions.make_participant_proposal(participant, received_cfp)
-        msg.set_metadata(messages_body_labels.can_you, participant_proposal[messages_body_labels.can_you])
-        msg.set_metadata(messages_body_labels.change_by, participant_proposal[messages_body_labels.change_by])
-        # print("[{}] posylam do [{}] PROPOSE".format(participant.jid, msg.to))
+        msg.body = None
+        participant_proposal = AlgorithmFunctions.make_participant_proposal(participant, json.loads(received_cfp.body))
+        msg.body = json.dumps(participant_proposal)
+        print('[{}] MADE PROPOSAL for {}: {}'.format(participant.jid, msg.to, msg))
+
         return msg
 
     @staticmethod
@@ -41,7 +42,7 @@ class CrossroadsMessages:
         msg = received_proposal.make_reply()
         msg.set_metadata(CrossroadsMessages.PERFORMATIVE,  CrossroadsMessages.ACCEPT_PROPOSAL)
         msg.body = 'ACCEPTED'
-        # print("[{}] posylam do [{}] ACCEPT".format(received_proposal.to, msg.to))
+        print("[{}] posylam do [{}] ACCEPT".format(received_proposal.to, msg.to))
         return msg
 
     @staticmethod
@@ -49,7 +50,7 @@ class CrossroadsMessages:
         msg = received_proposal.make_reply()
         msg.set_metadata(CrossroadsMessages.PERFORMATIVE,  CrossroadsMessages.REJECT_PROPOSAL)
         msg.body = 'REJECTED'
-        # print("[{}] posylam do [{}] REJECT".format(received_proposal.to, msg.to))
+        print("[{}] posylam do [{}] REJECT".format(received_proposal.to, msg.to))
         return msg
 
     @staticmethod
@@ -57,6 +58,5 @@ class CrossroadsMessages:
         msg = received_message.make_reply()
         msg.set_metadata(CrossroadsMessages.PERFORMATIVE, CrossroadsMessages.INFORM)
         msg.body = str(ok)
-        # print("[{}] posylam do [{}] INFORM".format(received_message.to, msg.to))
+        print("[{}] posylam do [{}] INFORM".format(received_message.to, msg.to))
         return msg
-
